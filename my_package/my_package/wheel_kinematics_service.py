@@ -4,7 +4,7 @@ from geometry_msgs.msg import Twist
 import numpy as np
 import serial 
 
-class KinematicMechanumWheel:
+class BckKinematicMechanumWheel:
 
     def __init__(self, y_to_wheel, x_to_wheel, wheel_radius, angle_from_wheels):
         self.y_to_wheel = y_to_wheel
@@ -36,7 +36,7 @@ class KinematicsProcessing(Node):
         x_to_wheel =  (15/100)
         radius = ((8/2)/100) 
         angle_from_wheels = np.pi/2
-        self.wheel = KinematicMechanumWheel(y_to_wheel, x_to_wheel, radius, angle_from_wheels)
+        self.wheel = BckKinematicMechanumWheel(y_to_wheel, x_to_wheel, radius, angle_from_wheels)
         self.serial = serial.Serial("/dev/ttyAMA0", 9600)
         #dev/Serial0
 
