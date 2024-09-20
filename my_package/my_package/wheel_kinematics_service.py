@@ -38,7 +38,7 @@ class KinematicsProcessing(Node):
         radius = ((8/2)/100) 
         angle_from_wheels = np.pi/2
         self.wheel = BckKinematicMechanumWheel(y_to_wheel, x_to_wheel, radius, angle_from_wheels)
-        # self.serial = serial.Serial("/dev/ttyAMA0", 9600)
+        self.serial = serial.Serial("/dev/ttyAMA0", 9600)
         #dev/Serial0
 
     def kinematics_callback(self, msg):
@@ -50,6 +50,7 @@ class KinematicsProcessing(Node):
 
         for i in range(4):
             serial_message = bytearray(["m ", f"{i} ", f"{wheel_ang_velocities[i]}", "$"])
+            self.serial.write(serial_message)
 
 def main(args=None):
     rclpy.init(args=args)
