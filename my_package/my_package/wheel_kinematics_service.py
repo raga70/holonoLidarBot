@@ -47,9 +47,13 @@ class KinematicsProcessing(Node):
             )
         wheel_ang_velocities = self.wheel.calculate_wheel_velocities(velocities)
         self.get_logger().info(f"{wheel_ang_velocities}")
+        # 1st motor front left first value 
+        # 2nd motor front right second
+        # 3rd motor back left third
+        # 4th motor back right fourth
 
         for i in range(4):
-            serial_message = bytearray(["m ", f"{i} ", f"{wheel_ang_velocities[i]}", "$"])
+            serial_message = bytearray(["m ", f"{i} ", f"{wheel_ang_velocities[i]}", "\n"])
             self.serial.write(serial_message)
 
 def main(args=None):
