@@ -56,8 +56,8 @@ class StaticFramePublisher(Node):
         t = TransformStamped()
 
         t.header.stamp = self.get_clock().now().to_msg()
-        t.header.frame_id = 'world'
-        t.child_frame_id = transformation[1]
+        t.header.frame_id = 'odom'
+        t.child_frame_id = 'base_footprint'
 
         t.transform.translation.x = float(transformation[2])
         t.transform.translation.y = float(transformation[3])
@@ -70,6 +70,40 @@ class StaticFramePublisher(Node):
         t.transform.rotation.w = quat[3]
 
         self.tf_static_broadcaster.sendTransform(t)
+
+        t = TransformStamped()
+        t.header.stamp = self.get_clock().now().to_msg()
+        t.header.frame_id = 'base_footprint'
+        t.child_frame_id = 'base_link'
+
+        t.transform.translation.x = float(transformation[2])
+        t.transform.translation.y = float(transformation[3])
+        t.transform.translation.z = float(transformation[4])
+        quat = quaternion_from_euler(
+            float(transformation[5]), float(transformation[6]), float(transformation[7]))
+        t.transform.rotation.x = quat[0]
+        t.transform.rotation.y = quat[1]
+        t.transform.rotation.z = quat[2]
+        t.transform.rotation.w = quat[3]
+
+        self.tf_static_broadcaster_2.sendTransform(t)
+
+        t = TransformStamped()
+        t.header.stamp = self.get_clock().now().to_msg()
+        t.header.frame_id = 'base_link'
+        t.child_frame_id = 'laser'
+
+        t.transform.translation.x = float(transformation[2])
+        t.transform.translation.y = float(transformation[3])
+        t.transform.translation.z = float(transformation[4])
+        quat = quaternion_from_euler(
+            float(transformation[5]), float(transformation[6]), float(transformation[7]))
+        t.transform.rotation.x = quat[0]
+        t.transform.rotation.y = quat[1]
+        t.transform.rotation.z = quat[2]
+        t.transform.rotation.w = quat[3]
+
+        self.tf_static_broadcaster_3.sendTransform(t)
 
 
 def main():
