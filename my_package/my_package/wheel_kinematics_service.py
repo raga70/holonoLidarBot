@@ -3,6 +3,7 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist
 import numpy as np
 import serial 
+import struct
 
 class BckKinematicMechanumWheel:
 
@@ -37,7 +38,7 @@ class KinematicsProcessing(Node):
         radius = ((8/2)/100) 
         angle_from_wheels = np.pi/2
         self.wheel = BckKinematicMechanumWheel(y_to_wheel, x_to_wheel, radius, angle_from_wheels)
-        self.serial = serial.Serial("/dev/ttyAMA0", 9600)
+        # self.serial = serial.Serial("/dev/ttyAMA0", 9600)
         #dev/Serial0
 
     def kinematics_callback(self, msg):
@@ -46,9 +47,9 @@ class KinematicsProcessing(Node):
             )
         wheel_ang_velocities = self.wheel.calculate_wheel_velocities(velocities)
         self.get_logger().info(f"{wheel_ang_velocities}")
+
         for i in range(4):
-            serial_message = bytearray(f"motor {i} {velocities[i]}$")
-            self.serial.write(serial_message)
+            serial_message = bytearray(["m ", f"{i} ", f"{wheel_ang_velocities[i]}", "$"])
 
 def main(args=None):
     rclpy.init(args=args)
