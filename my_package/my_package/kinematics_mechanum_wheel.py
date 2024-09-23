@@ -20,6 +20,8 @@ class KinematicMechanumWheel:
 
         self.T = 1/self.wheel_radius * self.T_wo_r
 
+        # NOTE(Chris): We should be doing this but the inversion of (T^T @ T) is singular no idea why
+        #               Maybe the original T matrix is not completely correctly defined
         self.T_fwd_dir = self.wheel_radius/4 * np.array(
             [
             [1, 1, 1, 1],
