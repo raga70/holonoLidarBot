@@ -25,7 +25,7 @@ class OdometryPublishing(Node):
         timer_period = 0.1
         self.timer = self.create_timer(timer_period, self.odom_timer_callback)
         self.wheel = KinematicMechanumWheel(y_to_wheel, x_to_wheel, radius, angle_from_wheels)
-        self.serial_port = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
+        self.serial_port = serial.Serial('/dev/Serial0', 9600, timeout=1)
         self.last_time = self.get_clock().now()
         
 
