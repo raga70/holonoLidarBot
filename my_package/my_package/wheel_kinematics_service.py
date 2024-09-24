@@ -18,8 +18,7 @@ class KinematicsProcessing(Node):
         self.max_output_angular_velocities = 11
         angle_from_wheels = np.pi/2
         self.wheel = KinematicMechanumWheel(y_to_wheel, x_to_wheel, radius, angle_from_wheels)
-        self.serial = serial.Serial("/dev/ttyAMA0", 9600)
-        #dev/Serial0
+        self.serial = serial.Serial("/dev/Serial0", 9600)
 
     def kinematics_callback(self, msg):
         velocities = np.array(
