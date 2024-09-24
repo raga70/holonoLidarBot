@@ -33,7 +33,10 @@ class KinematicsProcessing(Node):
         # 4th motor back right fourth
         for i in range(4):
             serial_message = bytearray(f"m {i} {wheel_ang_velocities[i]}\n")
-            self.serial.write(serial_message)
+            try:
+                self.serial.write(serial_message)
+            except Exception as e:
+                print(f"{e}")
 
 def main(args=None):
     rclpy.init(args=args)
