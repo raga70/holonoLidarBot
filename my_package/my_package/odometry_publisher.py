@@ -114,6 +114,7 @@ class OdometryPublishing(Node):
             self.last_time - current_time
 
         def publish_tf(self, current_time):
+            print('publishing tf')
             t = TransformStamped()
             t.header.stamp = current_time.to_msg()
             t.header.frame_id = 'odom'
