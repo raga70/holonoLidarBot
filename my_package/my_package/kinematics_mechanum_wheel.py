@@ -58,12 +58,12 @@ class KinematicMechanumWheel:
 
         self.T_fwd = np.linalg.pinv(self.T.transpose() @ self.T) @ self.T.transpose()
 
+    def test_calculate_wheel_velocities(self, velocities):
+        return self.T @ velocities
 
     def calculate_wheel_velocities(self, velocities):
-        z_rot = z_rotation_matrix(np.radians(90))
-        rot_vel = z_rotation_matrix(np.radians(90))@velocities[:2].T
+        rot_vel = z_rotation_matrix(np.radians(-90))@velocities[:2].T
         rot_vel = np.append(rot_vel, velocities[2])
-
         return self.T @ rot_vel 
 
     def calculate_robot_velocities(self, ang_velocities):
@@ -79,6 +79,6 @@ def setup_wheel() -> KinematicMechanumWheel:
 
 if __name__ == "__main__":
     wheel = setup_wheel()
-    velocities = np.array([1, 0, 0])
+    velocities = np.array([0, 0, 1])
     ang_vel = wheel.calculate_wheel_velocities(velocities)
     print(ang_vel)

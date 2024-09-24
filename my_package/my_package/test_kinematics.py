@@ -23,7 +23,7 @@ class TestKinematics(unittest.TestCase):
             0.0,
             0.0
         ])
-        ang_vel = self.wheel.calculate_wheel_velocities(input_vel)
+        ang_vel = self.wheel.test_calculate_wheel_velocities(input_vel)
         self.assertTrue((np.sign(ang_vel) == expected_signs).all(), f"{ang_vel} -> {expected_signs}")
 
     def test_backward_signs(self):
@@ -37,7 +37,7 @@ class TestKinematics(unittest.TestCase):
             0.0,
             0.0
         ])
-        ang_vel = self.wheel.calculate_wheel_velocities(input_vel)
+        ang_vel = self.wheel.test_calculate_wheel_velocities(input_vel)
         self.assertTrue((np.sign(ang_vel) == expected_signs).all(), f"{ang_vel} -> {expected_signs}")
 
     def test_left_signs(self):
@@ -52,7 +52,7 @@ class TestKinematics(unittest.TestCase):
             0.0
         ])
 
-        ang_vel = self.wheel.calculate_wheel_velocities(input_vel)
+        ang_vel = self.wheel.test_calculate_wheel_velocities(input_vel)
         self.assertTrue((np.sign(ang_vel) == expected_signs).all(), f"{ang_vel} -> {expected_signs}")
 
     def test_right_signs(self):
@@ -67,7 +67,7 @@ class TestKinematics(unittest.TestCase):
             0.0
         ])
 
-        ang_vel = self.wheel.calculate_wheel_velocities(input_vel)
+        ang_vel = self.wheel.test_calculate_wheel_velocities(input_vel)
         print(ang_vel)
         self.assertTrue((np.sign(ang_vel) == expected_signs).all(), f"{ang_vel} -> {expected_signs}")
 
@@ -83,7 +83,7 @@ class TestKinematics(unittest.TestCase):
             0.0
         ])
 
-        ang_vel = self.wheel.calculate_wheel_velocities(input_vel)
+        ang_vel = self.wheel.test_calculate_wheel_velocities(input_vel)
         self.assertTrue((np.sign(ang_vel) == expected_signs).all(), f"{ang_vel} -> {expected_signs}")
 
     def test_left_backward_signs(self):
@@ -98,7 +98,7 @@ class TestKinematics(unittest.TestCase):
             0.0
         ])
 
-        ang_vel = self.wheel.calculate_wheel_velocities(input_vel)
+        ang_vel = self.wheel.test_calculate_wheel_velocities(input_vel)
         self.assertTrue((np.sign(ang_vel) == expected_signs).all(), f"{ang_vel} -> {expected_signs}")
 
     def test_right_forward_signs(self):
@@ -113,7 +113,7 @@ class TestKinematics(unittest.TestCase):
             0.0
         ])
 
-        ang_vel = self.wheel.calculate_wheel_velocities(input_vel)
+        ang_vel = self.wheel.test_calculate_wheel_velocities(input_vel)
         self.assertTrue((np.sign(ang_vel) == expected_signs).all(), f"{ang_vel} -> {expected_signs}")
 
     def test_right_backward_signs(self):
@@ -128,7 +128,7 @@ class TestKinematics(unittest.TestCase):
             0.0
         ])
 
-        ang_vel = self.wheel.calculate_wheel_velocities(input_vel)
+        ang_vel = self.wheel.test_calculate_wheel_velocities(input_vel)
         self.assertTrue((np.sign(ang_vel) == expected_signs).all(), f"{ang_vel} -> {expected_signs}")
 
 
