@@ -49,13 +49,14 @@ class OdometryPublishing(Node):
         self.theta = 0.0
         y_to_wheel = (15/100)
         x_to_wheel =  (15/100)
-        radius = ((8/2)/100) 
+        self.radius = ((8/2)/100) 
         angle_from_wheels = np.pi/2
         timer_period = 0.1
         self.timer = self.create_timer(timer_period, self.odom_timer_callback)
-        self.wheel = KinematicMechanumWheel(y_to_wheel, x_to_wheel, radius, angle_from_wheels)
+        self.wheel = KinematicMechanumWheel(y_to_wheel, x_to_wheel, self.radius, angle_from_wheels)
         self.serial_port = serial.Serial('/dev/Serial0', 9600, timeout=1)
         self.last_time = self.get_clock().now()
+        self.var_encoding = var_resolution(self.radius, 1440)
         
 
     def odom_timer_callback(self):
@@ -89,20 +90,22 @@ class OdometryPublishing(Node):
             odom.twist.twist.linear.x = robot_velocities[0]
             odom.twist.twist.linear.y = robot_velocities[1]
             odom.twist.twist.angular.z = robot_velocities[2]
+            var_gearbox_backlash = var_gearbox_backlash(np.array([omega_1, omega_2, omega_3, omega_4]), np.radians(0.5), self.wheel)
+            variances = self.var_encoding + var_gearbox_backlash
             # NOTE(Chris): estimates these should be updated with actual covariances
-            odom.pose.covariance = [0.01, 0, 0, 0, 0, 0,
-                                    0, 0.01, 0, 0, 0, 0,
+            odom.pose.covariance = [variances[0], 0, 0, 0, 0, 0,
+                                    0, variances[1], 0, 0, 0, 0,
                                 0, 0, 99999, 0, 0, 0,
                                 0, 0, 0, 99999, 0, 0,
                                 0, 0, 0, 0, 99999, 0,
-                                0, 0, 0, 0, 0, 0.1]  
+                                0, 0, 0, 0, 0, variances[2]]  
 
-            odom.twist.covariance = [0.01, 0, 0, 0, 0, 0,
-                                 0, 0.01, 0, 0, 0, 0,
+            odom.twist.covariance = [variances[0], 0, 0, 0, 0, 0,
+                                 0, variances[1], 0, 0, 0, 0,
                                  0, 0, 99999, 0, 0, 0,
                                  0, 0, 0, 99999, 0, 0,
                                  0, 0, 0, 0, 99999, 0,
-                                 0, 0, 0, 0, 0, 0.1]  
+                                 0, 0, 0, 0, 0, variances[2]]  
 
             self.odom_publisher.publish(odom)
             self.publish_tf(current_time)
