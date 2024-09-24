@@ -11,7 +11,8 @@ import tf2_ros
 
 def var_resolution(wheel_radius, resolution):
     """ Calculates the variance created by the encoder resolution.
-        This is in meters
+        This is in meters. The calculation is calculating how many radians
+        the encoder misses.
 
     Args:
         wheel_radius (_type_): wheel radius in meters 

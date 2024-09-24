@@ -8,6 +8,7 @@ class KinematicMechanumWheel:
         self.wheel_radius = wheel_radius
         self.beta = angle_from_wheels
         self.alpha = np.arctan(self.y_to_wheel / self.x_to_wheel)
+        #self.alphas = np.array([np.pi/4.0, -np.pi/4.0, 3*np.pi/4.0, 3])
         self.yetas = np.array([np.radians(-45), np.radians(45), np.radians(45), np.radians(-45)])
         self.length = np.sqrt(self.y_to_wheel**2 + self.x_to_wheel**2)
 
