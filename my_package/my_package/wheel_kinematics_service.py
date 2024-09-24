@@ -37,6 +37,7 @@ class KinematicsProcessing(Node):
                 self.serial.write(serial_message)
             except Exception as e:
                 print(f"{e}")
+                break
 
 def main(args=None):
     rclpy.init(args=args)
