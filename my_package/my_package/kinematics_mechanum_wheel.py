@@ -1,4 +1,6 @@
 import numpy as np
+from math_utils import z_rotation_matrix
+
 
 class KinematicMechanumWheel:
 
@@ -35,7 +37,6 @@ class KinematicMechanumWheel:
                 (self.length*np.sin(self.betas[3]-self.yetas[3]-self.alphas[3]))/np.sin(self.yetas[3])
             ]
         ])
-        print(-1*self.T_wo_r)
         self.T_wo_r = np.array([
             [1, -1, -(self.x_to_wheel+self.y_to_wheel)],
             [1, 1, (self.x_to_wheel + self.y_to_wheel)],
@@ -59,7 +60,28 @@ class KinematicMechanumWheel:
 
 
     def calculate_wheel_velocities(self, velocities):
-        return self.T @ velocities
+        print(velocities[:2])
+        z_rot = z_rotation_matrix(np.radians(90))
+        print(z_rot)
+        rot_vel = z_rotation_matrix(np.radians(90))@velocities[:2].T
+        rot_vel = np.append(rot_vel, velocities[2])
+        print(rot_vel)
+
+        return self.T @ rot_vel 
 
     def calculate_robot_velocities(self, ang_velocities):
         return  self.T_fwd @ ang_velocities 
+
+def setup_wheel() -> KinematicMechanumWheel:
+    y_to_wheel = (15/100)
+    x_to_wheel =  (15/100)
+    radius = ((8/2)/100) 
+    angle_from_wheels = np.pi/2
+    return KinematicMechanumWheel(x_to_wheel, y_to_wheel, radius, angle_from_wheels)
+
+
+if __name__ == "__main__":
+    wheel = setup_wheel()
+    velocities = np.array([1, 0, 0])
+    ang_vel = wheel.calculate_wheel_velocities(velocities)
+    print(ang_vel)
