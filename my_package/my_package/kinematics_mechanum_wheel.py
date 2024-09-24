@@ -37,6 +37,7 @@ class KinematicMechanumWheel:
                 (self.length*np.sin(self.betas[3]-self.yetas[3]-self.alphas[3]))/np.sin(self.yetas[3])
             ]
         ])
+        print(self.T_wo_r)
         self.T_wo_r = np.array([
             [1, -1, -(self.x_to_wheel+self.y_to_wheel)],
             [1, 1, (self.x_to_wheel + self.y_to_wheel)],
