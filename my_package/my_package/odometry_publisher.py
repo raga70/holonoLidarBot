@@ -64,14 +64,16 @@ class OdometryPublishing(Node):
         if serial_read_back:
             current_time = self.get_clock().now()
             delta_time = (current_time - self.last_time).now()
-            split_data = serial_read_back.split(',')
+            split_data = serial_read_back[:-1].split(',')
+            self.get_logger().info(f"split data: {split_data}")
             omega_1, omega_2, omega_3, omega_4 = map(float, split_data)
-            robot_velocities = self.wheel.calculate_robot_velocities(np.array([omega_1, omega_2, omega_3, omega_4]))
+            ang_velocities = np.array([omega_1, omega_2, omega_3, omega_4])
+            self.get_logger().info(f"ang velocities: {ang_velocities}")
+            robot_velocities = self.wheel.calculate_robot_velocities(ang_velocities)
             
             delta_x = robot_velocities[0] * delta_time
             delta_y = robot_velocities[1] * delta_time
             delta_theta = robot_velocities[2] * delta_time
-
 
             self.x += delta_x * math.cos(self.theta) - delta_y * math.sin(self.theta)
             self.y += delta_x * math.cos(self.theta) + delta_y * math.sin(self.theta)
