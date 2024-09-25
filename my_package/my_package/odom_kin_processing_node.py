@@ -34,6 +34,7 @@ class KinOdomProcessing(Node):
         self.max_output_angular_velocities = 11
         angle_from_wheels = np.pi/2
         self.wheel = KinematicMechanumWheel(y_to_wheel, x_to_wheel, radius, angle_from_wheels)
+        self.old_ang_velocity = np.array([0, 0, 0, 0])
         # Setup serial port
         self.serial = serial.Serial("/dev/serial0", 9600)
         # Setup timestamps for delta time calculations
@@ -78,7 +79,8 @@ class KinOdomProcessing(Node):
                 current_time = self.get_clock().now()
                 delta_time = (current_time - self.last_time).nanoseconds / 1e9
                 # it's not potential anguluar velocity it is angular velocity
-                ang_velocities = potential_ang_velocities
+                ang_velocities = ((2*np.pi*(np.abs(potential_ang_velocities-self.old_ang_velocity))) / 1440) / delta_time
+                self.old_ang_velocity = potential_ang_velocities
                 robot_velocities = self.wheel.calculate_robot_velocities(ang_velocities)
                 print("DEBUGGING")
                 print(robot_velocities)
