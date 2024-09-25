@@ -111,9 +111,10 @@ class KinOdomProcessing(Node):
         # 3rd motor back left third
         # 4th motor back right fourth
         for i in range(4):
-            serial_message = bytearray(f"m {i} {wheel_ang_velocities[i]}\n")
+            serial_message = f'm {i} {wheel_ang_velocities[i]} \n'.encode()
             try:
                 self.serial.write(serial_message)
             except Exception as e:
+                self.serial = serial.Serial("/dev/serial0", 9600)
                 print(f"{e}")
                 break
