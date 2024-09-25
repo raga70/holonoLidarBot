@@ -26,6 +26,7 @@ class KinOdomProcessing(Node):
         y_to_wheel = (15/100)
         x_to_wheel =  (15/100)
         radius = ((8/2)/100) 
+        self.radius = radius
         self.max_angular_velocities = 60
         self.max_output_angular_velocities = 11
         angle_from_wheels = np.pi/2
