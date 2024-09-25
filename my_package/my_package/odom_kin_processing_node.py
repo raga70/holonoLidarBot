@@ -66,6 +66,8 @@ class KinOdomProcessing(Node):
             print("Exception:",e)
         if serial_read_back:
             potential_ang_velocities = convert_serial_data_to_angular_velocities(serial_read_back, self.get_logger())
+            print("DEBUGGING:")
+            print(potential_ang_velocities)
             if potential_ang_velocities is not None:
             #if potential_ang_velocities is not None and len(potential_ang_velocities) == 4 and type(potential_ang_velocities) == float:
                 # only update time when we are sure we have received a valid message. Otherwise we would be missing distance, 
