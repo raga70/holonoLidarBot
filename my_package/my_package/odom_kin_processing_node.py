@@ -113,8 +113,8 @@ class KinOdomProcessing(Node):
         delta_y = robot_velocities[1] * delta_time
         delta_theta = robot_velocities[2] * delta_time
 
-        self.x += delta_x * math.cos(self.theta) - delta_y * math.sin(self.theta)
-        self.y += delta_x * math.sin(self.theta) + delta_y * math.cos(self.theta)
+        self.x += delta_y * math.cos(self.theta) - delta_x * math.sin(self.theta)
+        self.y += delta_y * math.sin(self.theta) + delta_x * math.cos(self.theta)
         self.theta += delta_theta
         self.get_logger().info(f"x: {self.x}, y: {self.y}, rot: {self.theta}")
 
