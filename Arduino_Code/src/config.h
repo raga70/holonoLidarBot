@@ -1,7 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 #include "motor.h"
-// #include <L298N.h>
+#include <Encoder.h>
+// int pulsesPerRevolution = 1440;
 
 //front left
 // Motor 1 Pins
@@ -39,25 +40,18 @@
 #define ENCODER4_PIN_A 21
 #define ENCODER4_PIN_B 29
 
-// struct MotorConfig{
-//     L298N Motor;
-//     int EncA;
-//     int EncB;
-// };
+Encoder enc0(ENCODER1_PIN_A, ENCODER1_PIN_B);
+Encoder enc1(ENCODER2_PIN_A, ENCODER2_PIN_B);
+Encoder enc2(ENCODER3_PIN_A, ENCODER3_PIN_B);
+Encoder enc3(ENCODER4_PIN_A, ENCODER4_PIN_B);
 
-// MotorConfig motor1 = {L298N(MOTOR1_PIN_EN, MOTOR1_PIN_IN1, MOTOR1_PIN_IN2), ENCODER1_PIN_A, ENCODER1_PIN_B};
-// MotorConfig motor2 = {L298N(MOTOR2_PIN_EN, MOTOR2_PIN_IN1, MOTOR2_PIN_IN2), ENCODER2_PIN_A, ENCODER2_PIN_B};
-// MotorConfig motor3 = {L298N(MOTOR3_PIN_EN, MOTOR3_PIN_IN1, MOTOR3_PIN_IN2), ENCODER3_PIN_A, ENCODER3_PIN_B};
-// MotorConfig motor4 = {L298N(MOTOR4_PIN_EN, MOTOR4_PIN_IN1, MOTOR4_PIN_IN2), ENCODER4_PIN_A, ENCODER4_PIN_B};
 
-Motor m1(MOTOR1_PIN_EN, MOTOR1_PIN_IN1, MOTOR1_PIN_IN2, ENCODER1_PIN_A, ENCODER1_PIN_B);
-Motor m2(MOTOR2_PIN_EN, MOTOR2_PIN_IN1, MOTOR2_PIN_IN2, ENCODER2_PIN_A, ENCODER2_PIN_B);
-Motor m3(MOTOR3_PIN_EN, MOTOR3_PIN_IN1, MOTOR3_PIN_IN2, ENCODER3_PIN_A, ENCODER3_PIN_B);
-Motor m4(MOTOR4_PIN_EN, MOTOR4_PIN_IN1, MOTOR4_PIN_IN2, ENCODER4_PIN_A, ENCODER4_PIN_B);
+Motor m0(MOTOR1_PIN_EN, MOTOR1_PIN_IN1, MOTOR1_PIN_IN2,enc0);
+Motor m1(MOTOR2_PIN_EN, MOTOR2_PIN_IN1, MOTOR2_PIN_IN2,enc1);
+Motor m2(MOTOR3_PIN_EN, MOTOR3_PIN_IN1, MOTOR3_PIN_IN2,enc2);
+Motor m3(MOTOR4_PIN_EN, MOTOR4_PIN_IN1, MOTOR4_PIN_IN2,enc3);
 
-Motor motors[] = {m1,m2,m3,m4};
-
-// MotorConfig motors[] = {motor1, motor2, motor3, motor4};
+Motor motors[] = {m0,m1,m2,m3};
 
 // INT.0 on Pin 21
 // INT.1 on pin 20

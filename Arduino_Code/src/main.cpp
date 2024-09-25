@@ -1,12 +1,18 @@
 #include <Arduino.h>
 #include "config.h"
-#include <L298N.h>
-void processSerialInput();
+
+void processSerialInput(HardwareSerial &thisserial);
 void getSerialInput();
 void printSpeeds();
 void printEncoders();
+void sendEncoder();
 
-L298N motor = L298N(2, 35, 37);
+long currentTime = 0;
+//debug timing
+long d_previousTime = 0;
+
+//pi comm timing
+long p_previousTime = 0;
 
 void setup()
 {
@@ -14,7 +20,7 @@ void setup()
   Serial.begin(9600);
   Serial2.begin(9600);
   // Wait for Serial Monitor to be opened
-  while (!Serial)
+  while (!Serial || !Serial2)
   {
     // do nothing
   }
@@ -24,25 +30,34 @@ void setup()
     Serial.println("Motor ");
     Serial.print(i);
     Serial.println(" started");
-    // motors[i].setSpeed(255);
-    // motors[i].forward();
   }
-  
-  // motor.forward();
+  Serial.println("Setup Complete");
 }
 
 void loop()
-{
-  processSerialInput();
-  // printSpeeds();
-  // printEncoders();
-  delay(10);
+{ 
+  currentTime = millis();
+
+  // if(currentTime - d_previousTime >= 500){
+  //     printSpeeds();
+  //     printEncoders();
+  //     d_previousTime = currentTime;
+  // }
+
+  if(currentTime - p_previousTime >= 100){
+    
+    p_previousTime = currentTime;
+    sendEncoder();
+  }
+
+  processSerialInput(Serial);
+  processSerialInput(Serial2);
 }
 
-void processSerialInput() {
-  if (Serial.available()) {
+void processSerialInput(HardwareSerial &thisserial) {
+  if (thisserial.available()) {
     char input[32];
-    Serial.readBytesUntil('\n', input, 31);
+    thisserial.readBytesUntil('\n', input, 31);
     input[31] = '\0'; // Ensure null-terminated string
 
     char* command = strtok(input, " "); //tokenise input on spaces
@@ -51,7 +66,7 @@ void processSerialInput() {
       char* speedStr = strtok(NULL, " ");
       if (motorStr != nullptr && speedStr != nullptr) {
 
-        int motor = atoi(motorStr);
+        unsigned long motor = atoi(motorStr);
         if (motor < 0 || motor >= sizeof(motors) / sizeof(Motor)) {
           Serial.println("Invalid motor number");
           return;
@@ -63,7 +78,7 @@ void processSerialInput() {
           return;
         }
 
-        int targetSpeed = map(abs(speed), 0, 30, 0, 255);
+        int targetSpeed = map(abs(speed), 0, 11, 0, 255);
           motors[motor].setSpeed(targetSpeed);
         if(speed > 0){
           motors[motor].forward();
@@ -82,12 +97,15 @@ void processSerialInput() {
         Serial.println("Invalid input format");
       }
     } else {
-      Serial.println("Unknown command");
+      Serial.print("Unknown command: ");
+      Serial.print(input);
+      Serial.println();
     }
   }
 }
 
 void printSpeeds(){
+    Serial.println();
   for (size_t i = 0; i < 4; i++)
   {
     Serial.print("Motor ");
@@ -98,22 +116,36 @@ void printSpeeds(){
 }
 
 void printEncoders(){
+    Serial.println();
   for (size_t i = 0; i < 4; i++)
   {
+    double count = motors[i].readEncoder();
     Serial.print("Motor ");
     Serial.print(i);
     Serial.print(" encoder: ");
-    Serial.println(motors[i].readEncoder());
+    Serial.println(count);
+
   }
 }
 
-/// @brief protocol 1 byte per pair of wheels first bit is which pair, second direction, last 6 is speed
-void getSerialInput(){
-  if(Serial2.available()){
-    uint8_t command;
-    Serial2.readBytes(&command,1);
-    uint8_t motor = command >> 7;
-    uint8_t direction =  (command >> 6) & 0x01;
-    uint8_t speed = command & 0x3F;
-  }
+void sendEncoder(){
+  long count = motors[0].readEncoder();
+  long count1 = motors[1].readEncoder();
+  long count2 = motors[2].readEncoder();
+  long count3 = motors[3].readEncoder();
+
+  char message[32];
+  snprintf(message, sizeof(message), "%li,%li,%li,%li", count, count1, count2, count3);
+  Serial2.println(message);
 }
+
+// /// @brief protocol 1 byte per pair of wheels first bit is which pair, second direction, last 6 is speed
+// void getSerialInput(){
+//   if(Serial2.available()){
+//     uint8_t command;
+//     Serial2.readBytes(&command,1);
+//     uint8_t motor = command >> 7;
+//     uint8_t direction =  (command >> 6) & 0x01;
+//     uint8_t speed = command & 0x3F;
+//   }
+// }
