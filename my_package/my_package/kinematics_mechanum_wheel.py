@@ -50,24 +50,24 @@ class KinematicMechanumWheel:
 
         # NOTE(Chris): We should be doing this but the inversion of (T^T @ T) is singular no idea why
         #               Maybe the original T matrix is not completely correctly defined
-        self.T_fwd_dir = self.wheel_radius/4 * np.array(
+
+        self.T_fwd = np.linalg.pinv(self.T.transpose() @ self.T) @ self.T.transpose()
+        self.T_fwd = self.wheel_radius/4 * np.array(
             [
             [1, 1, 1, 1],
             [-1, 1, 1, -1],
             [-1/(self.x_to_wheel + self.y_to_wheel), 1/(self.x_to_wheel + self.y_to_wheel),-1/(self.x_to_wheel + self.y_to_wheel),1/(self.x_to_wheel + self.y_to_wheel)]
         ])
 
-        self.T_fwd = np.linalg.pinv(self.T.transpose() @ self.T) @ self.T.transpose()
-
     def test_calculate_wheel_velocities(self, velocities):
-        return self.T @ velocities
+        return self.T @ velocities 
 
     def calculate_wheel_velocities(self, velocities):
         velocities[0] *= -1
-        rot_vel = z_rotation_matrix(np.radians(-90))@velocities[:2].T
-        rot_vel = np.append(rot_vel, velocities[2])
-        rot_vel[2] *= 3
-        return self.T @ rot_vel 
+        # rot_vel = z_rotation_matrix(np.radians(-90))@velocities[:2].T
+        # rot_vel = np.append(rot_vel, velocities[2])
+        # rot_vel[2] *= 3
+        return self.T @ velocities 
 
     def calculate_robot_velocities(self, ang_velocities):
         r_vel = self.T_fwd @ ang_velocities
@@ -84,7 +84,7 @@ def setup_wheel() -> KinematicMechanumWheel:
 
 if __name__ == "__main__":
     wheel = setup_wheel()
-    velocities = np.array([0, 0, 1])
+    velocities = np.array([1, 0, 0])
     ang_vel = wheel.calculate_wheel_velocities(velocities)
     robot_velocities = wheel.calculate_robot_velocities(ang_vel)
     print(ang_vel)
