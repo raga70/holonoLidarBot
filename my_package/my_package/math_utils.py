@@ -2,8 +2,6 @@ import numpy as np
 import math
 from math import radians
 
-from sympy import euler
-
 def z_rotation_matrix(z):
     return np.array([
         [np.cos(z), -np.sin(z)],
