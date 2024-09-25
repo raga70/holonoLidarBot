@@ -5,6 +5,7 @@ import numpy as np
 import tf2_ros
 import serial 
 import math
+import rclpy
 
 from math_utils import euler_to_quaternion
 from kinematics_mechanum_wheel import KinematicMechanumWheel
@@ -24,13 +25,18 @@ class KinOdomProcessing(Node):
         # Setup for wheel object instance
         y_to_wheel = (15/100)
         x_to_wheel =  (15/100)
+        self.x = 0
+        self.y = 0
+        self.theta = 0
         radius = ((8/2)/100) 
+        self.radius = radius
         self.max_angular_velocities = 60
         self.max_output_angular_velocities = 11
         angle_from_wheels = np.pi/2
         self.wheel = KinematicMechanumWheel(y_to_wheel, x_to_wheel, radius, angle_from_wheels)
+        self.old_ang_velocity = np.array([0, 0, 0, 0])
         # Setup serial port
-        self.serial = serial.Serial("/dev/Serial0", 9600)
+        self.serial = serial.Serial("/dev/serial0", 9600)
         # Setup timestamps for delta time calculations
         self.last_time = self.get_clock().now()
         # Calculate constnat variances for covariance matrix for odometry message
@@ -47,31 +53,42 @@ class KinOdomProcessing(Node):
         t.transform.translation.y = self.y
         t.transform.translation.z = 0.0
 
-        orientation =  euler_to_quaternion(0, 0, self.theta)
-        t.transform.rotation.x = orientation[0] 
-        t.transform.rotation.y = orientation[1] 
-        t.transform.rotation.z = orientation[2] 
-        t.transform.rotation.w = orientation[3] 
+        orientation =  euler_to_quaternion(0, 0, self.theta+np.pi)
+        t.transform.rotation.x = orientation[1] 
+        t.transform.rotation.y = orientation[2] 
+        t.transform.rotation.z = orientation[3] 
+        t.transform.rotation.w = orientation[0] 
 
         self.tf_broadcaster.sendTransform(t)      
 
     def odom_timer_callback(self):
-        serial_read_back = self.serial_port.readline().strip()
+        serial_read_back = None
+        try:
+            serial_read_back = self.serial.readline().strip()
+        except Exception as e:
+            self.serial = serial.Serial("/dev/serial0", 9600)
+            print("Exception:",e)
         if serial_read_back:
             potential_ang_velocities = convert_serial_data_to_angular_velocities(serial_read_back, self.get_logger())
+            print("DEBUGGING:")
+            print(potential_ang_velocities)
             if potential_ang_velocities is not None:
+            #if potential_ang_velocities is not None and len(potential_ang_velocities) == 4 and type(potential_ang_velocities) == float:
                 # only update time when we are sure we have received a valid message. Otherwise we would be missing distance, 
                 # Since we did not receive the correect velocities we didnt update the position of the robot
                 current_time = self.get_clock().now()
                 delta_time = (current_time - self.last_time).nanoseconds / 1e9
                 # it's not potential anguluar velocity it is angular velocity
-                ang_velocities = potential_ang_velocities
+                ang_velocities = (2*np.pi*((potential_ang_velocities-self.old_ang_velocity)) / 1440) / delta_time
+                self.old_ang_velocity = potential_ang_velocities
                 robot_velocities = self.wheel.calculate_robot_velocities(ang_velocities)
+                print("DEBUGGING")
+                print(robot_velocities)
                 self.update_position_with_odometry(delta_time, robot_velocities)
                 odom = fill_odometry_message(self.x, self.y, self.theta, current_time, robot_velocities)
-                var_gearbox_backlash = var_gearbox_backlash(ang_velocities, np.radians(0.5), self.wheel)
+                #var_gearbox_backlash = var_gearbox_backlash(ang_velocities, np.radians(0.5), self.wheel)
 
-                variances = self.var_encoding + var_gearbox_backlash
+                ##variances = self.var_encoding + var_gearbox_backlash
                 # odom.pose.covariance = [variances[0], 0, 0, 0, 0, 0,
                 #                         0, variances[1], 0, 0, 0, 0,
                 #                     0, 0, 99999, 0, 0, 0,
@@ -118,3 +135,19 @@ class KinOdomProcessing(Node):
                 self.serial = serial.Serial("/dev/serial0", 9600)
                 print(f"{e}")
                 break
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = KinOdomProcessing()
+
+    try: 
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
