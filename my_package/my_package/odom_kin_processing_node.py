@@ -84,9 +84,9 @@ class KinOdomProcessing(Node):
                 print(robot_velocities)
                 self.update_position_with_odometry(delta_time, robot_velocities)
                 odom = fill_odometry_message(self.x, self.y, self.theta, current_time, robot_velocities)
-                var_gearbox_backlash = var_gearbox_backlash(ang_velocities, np.radians(0.5), self.wheel)
+                #var_gearbox_backlash = var_gearbox_backlash(ang_velocities, np.radians(0.5), self.wheel)
 
-                variances = self.var_encoding + var_gearbox_backlash
+                ##variances = self.var_encoding + var_gearbox_backlash
                 # odom.pose.covariance = [variances[0], 0, 0, 0, 0, 0,
                 #                         0, variances[1], 0, 0, 0, 0,
                 #                     0, 0, 99999, 0, 0, 0,
