@@ -58,6 +58,7 @@ class KinOdomProcessing(Node):
         self.tf_broadcaster.sendTransform(t)      
 
     def odom_timer_callback(self):
+        serial_read_back = None
         try:
             serial_read_back = self.serial.readline().strip()
         except Exception as e:
