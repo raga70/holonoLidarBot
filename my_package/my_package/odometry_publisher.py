@@ -1,3 +1,5 @@
+from re import split
+from typing import Optional
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist, Quaternion, TransformStamped
@@ -38,6 +40,40 @@ def var_gearbox_backlash(encoder_ang_vel, wheelbacklash, wheel):
     wheel_slippages = np.sign(encoder_ang_vel) * wheelbacklash
     return wheel.calculate_robot_velocities(wheel_slippages)
 
+def convert_serial_data_to_angular_velocities(serial_read_back: str, logger) -> Optional[np.array]:
+    split_data = str(serial_read_back)[2:-1].split(',')
+    try:
+        omega_1, omega_2, omega_3, omega_4 = map(float, split_data)
+        if logger is not None:
+            logger.info(f"split data: {split_data}")
+        ang_velocities = np.array([omega_1, omega_2, omega_3, omega_4])
+        return ang_velocities
+    except Exception as e:
+        print("skipped updating odometry data")
+        print(e)
+        return None
+
+def fill_odometry_message(x_pos, y_pos, theta, current_time, robot_velocities) -> Odometry:
+        odom = Odometry()
+        odom.header.stamp = current_time.to_msg()
+        odom.header.frame_id = 'odom'
+        odom.child_frame_id = 'base_link'
+        odom.pose.pose.position.x = x_pos
+        odom.pose.pose.position.y = y_pos
+        odom.pose.pose.position.z = 0.0
+
+        orientation = euler_to_quaternion(0, 0, theta)
+        odom.pose.pose.orientation = Quaternion()
+        odom.pose.pose.orientation = orientation[0]
+        odom.pose.pose.orientation = orientation[1]
+        odom.pose.pose.orientation = orientation[2]
+        odom.pose.pose.orientation = orientation[3]
+
+        odom.twist.twist.linear.x = robot_velocities[0]
+        odom.twist.twist.linear.y = robot_velocities[1]
+        odom.twist.twist.angular.z = robot_velocities[2]
+        return odom
+
 class OdometryPublishing(Node):
 
     def __init__(self) -> None:
@@ -57,80 +93,66 @@ class OdometryPublishing(Node):
         self.serial_port = serial.Serial('/dev/Serial0', 9600, timeout=1)
         self.last_time = self.get_clock().now()
         self.var_encoding = var_resolution(self.radius, 1440)
-        
+
+    def tf_publish(self, current_time):
+        print('publishing tf')
+        t = TransformStamped()
+        t.header.stamp = current_time.to_msg()
+        t.header.frame_id = 'odom'
+        t.child_frame_id = 'base_link'
+
+        t.transform.translation.x = self.x
+        t.transform.translation.y = self.y
+        t.transform.translation.z = 0.0
+
+        orientation =  euler_to_quaternion(0, 0, self.theta)
+        t.transform.rotation.x = orientation[0] 
+        t.transform.rotation.y = orientation[1] 
+        t.transform.rotation.z = orientation[2] 
+        t.transform.rotation.w = orientation[3] 
+
+        self.tf_broadcaster.sendTransform(t)      
 
     def odom_timer_callback(self):
-        serial_read_back = self.serial_port.readline().decode('utf-8').strip()
+        serial_read_back = self.serial_port.readline().strip()
         if serial_read_back:
             current_time = self.get_clock().now()
-            delta_time = (current_time - self.last_time).now()
-            split_data = serial_read_back[:-1].split(',')
-            self.get_logger().info(f"split data: {split_data}")
-            omega_1, omega_2, omega_3, omega_4 = map(float, split_data)
-            ang_velocities = np.array([omega_1, omega_2, omega_3, omega_4])
-            self.get_logger().info(f"ang velocities: {ang_velocities}")
-            robot_velocities = self.wheel.calculate_robot_velocities(ang_velocities)
-            
-            delta_x = robot_velocities[0] * delta_time
-            delta_y = robot_velocities[1] * delta_time
-            delta_theta = robot_velocities[2] * delta_time
+            delta_time = (current_time - self.last_time).nanoseconds / 1e9
+            potential_ang_velocities = convert_serial_data_to_angular_velocities(serial_read_back, self.get_logger())
+            if potential_ang_velocities is not None:
+                ang_velocities = potential_ang_velocities
+                robot_velocities = self.wheel.calculate_robot_velocities(ang_velocities)
+                self.update_position_with_odometry(delta_time, robot_velocities)
+                odom = fill_odometry_message(self.x, self.y, self.theta, current_time, robot_velocities)
+                var_gearbox_backlash = var_gearbox_backlash(ang_velocities, np.radians(0.5), self.wheel)
 
-            self.x += delta_x * math.cos(self.theta) - delta_y * math.sin(self.theta)
-            self.y += delta_x * math.cos(self.theta) + delta_y * math.sin(self.theta)
-            self.theta += delta_theta
-            odom = Odometry()
-            odom.header.stamp = current_time.to_msg()
-            odom.header.frame_id = 'odom'
-            odom.child_frame_id = 'base_link'
-            odom.pose.pose.position.x = self.x
-            odom.pose.pose.position.y = self.y
-            odom.pose.pose.position.z = 0.0
+                variances = self.var_encoding + var_gearbox_backlash
+                # odom.pose.covariance = [variances[0], 0, 0, 0, 0, 0,
+                #                         0, variances[1], 0, 0, 0, 0,
+                #                     0, 0, 99999, 0, 0, 0,
+                #                     0, 0, 0, 99999, 0, 0,
+                #                     0, 0, 0, 0, 99999, 0,
+                #                     0, 0, 0, 0, 0, variances[2]]  
 
-            orientation = euler_to_quaternion(0, 0, self.theta)
-            odom.pose.pose.orientation = Quaternion(orientation)
+                # odom.twist.covariance = [variances[0], 0, 0, 0, 0, 0,
+                #                      0, variances[1], 0, 0, 0, 0,
+                #                      0, 0, 99999, 0, 0, 0,
+                #                      0, 0, 0, 99999, 0, 0,
+                #                      0, 0, 0, 0, 99999, 0,
+                #                      0, 0, 0, 0, 0, variances[2]]  
 
-            odom.twist.twist.linear.x = robot_velocities[0]
-            odom.twist.twist.linear.y = robot_velocities[1]
-            odom.twist.twist.angular.z = robot_velocities[2]
-            var_gearbox_backlash = var_gearbox_backlash(np.array([omega_1, omega_2, omega_3, omega_4]), np.radians(0.5), self.wheel)
-            variances = self.var_encoding + var_gearbox_backlash
-            # NOTE(Chris): estimates these should be updated with actual covariances
-            odom.pose.covariance = [variances[0], 0, 0, 0, 0, 0,
-                                    0, variances[1], 0, 0, 0, 0,
-                                0, 0, 99999, 0, 0, 0,
-                                0, 0, 0, 99999, 0, 0,
-                                0, 0, 0, 0, 99999, 0,
-                                0, 0, 0, 0, 0, variances[2]]  
+                self.odom_publisher.publish(odom)
+                self.tf_publish(current_time)
+                self.last_time - current_time
 
-            odom.twist.covariance = [variances[0], 0, 0, 0, 0, 0,
-                                 0, variances[1], 0, 0, 0, 0,
-                                 0, 0, 99999, 0, 0, 0,
-                                 0, 0, 0, 99999, 0, 0,
-                                 0, 0, 0, 0, 99999, 0,
-                                 0, 0, 0, 0, 0, variances[2]]  
+    def update_position_with_odometry(self, delta_time, robot_velocities):
+        delta_x = robot_velocities[0] * delta_time
+        delta_y = robot_velocities[1] * delta_time
+        delta_theta = robot_velocities[2] * delta_time
 
-            self.odom_publisher.publish(odom)
-            self.publish_tf(current_time)
-            self.last_time - current_time
-
-        def publish_tf(self, current_time):
-            print('publishing tf')
-            t = TransformStamped()
-            t.header.stamp = current_time.to_msg()
-            t.header.frame_id = 'odom'
-            t.child_frame_id = 'base_link'
-
-            t.transform.translation.x = self.x
-            t.transform.translation.y = self.y
-            t.transform.translation.z = 0.0
-
-            orientation =  euler_to_quaternion(0, 0, self.theta)
-            t.transform.rotation.x = orientation[0] 
-            t.transform.rotation.y = orientation[1] 
-            t.transform.rotation.z = orientation[2] 
-            t.transform.rotation.w = orientation[3] 
-
-            self.tf_broadcaster.sendTransform(t)
+        self.x += delta_x * math.cos(self.theta) - delta_y * math.sin(self.theta)
+        self.y += delta_x * math.cos(self.theta) + delta_y * math.sin(self.theta)
+        self.theta += delta_theta
 
 def main(args=None):
     rclpy.init(args=args)
