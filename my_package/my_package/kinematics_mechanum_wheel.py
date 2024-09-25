@@ -79,7 +79,9 @@ class KinematicMechanumWheel:
 
     def calculate_robot_velocities(self, ang_velocities):
         robot_velocities = self.T_fwd @ ang_velocities 
-        robot_velocities = np.round(robot_velocities, decimals=10)
+        rotated_robot_velocities = z_rotation_matrix(np.radians(90))@robot_velocities[:2].T
+        rotated_robot_velocities = np.append(rotated_robot_velocities, robot_velocities[2])
+        rotated_robot_velocities = np.round(rotated_robot_velocities, decimals=10)
         return robot_velocities 
 
 def setup_wheel() -> KinematicMechanumWheel:
