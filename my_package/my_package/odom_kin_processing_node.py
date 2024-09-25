@@ -58,7 +58,7 @@ class KinOdomProcessing(Node):
         self.tf_broadcaster.sendTransform(t)      
 
     def odom_timer_callback(self):
-        serial_read_back = self.serial_port.readline().strip()
+        serial_read_back = self.serial.readline().strip()
         if serial_read_back:
             potential_ang_velocities = convert_serial_data_to_angular_velocities(serial_read_back, self.get_logger())
             if potential_ang_velocities is not None:
