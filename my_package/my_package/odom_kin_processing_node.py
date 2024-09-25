@@ -1,4 +1,4 @@
-from geometry_msgs.msg import Twist, TransformStamped
+    from geometry_msgs.msg import Twist, TransformStamped
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
 import numpy as np
@@ -52,7 +52,7 @@ class KinOdomProcessing(Node):
         t.transform.translation.y = self.y
         t.transform.translation.z = 0.0
 
-        orientation =  euler_to_quaternion(0, np.pi, self.theta)
+        orientation =  euler_to_quaternion(0, np.pi/2, self.theta)
         t.transform.rotation.x = orientation[0] 
         t.transform.rotation.y = orientation[1] 
         t.transform.rotation.z = orientation[2] 
