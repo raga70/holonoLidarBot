@@ -115,6 +115,7 @@ class KinOdomProcessing(Node):
         self.x += delta_x * math.cos(self.theta) - delta_y * math.sin(self.theta)
         self.y += delta_x * math.cos(self.theta) + delta_y * math.sin(self.theta)
         self.theta += delta_theta
+        self.get_logger().info(f"x: {self.x}, y: {self.y}, rot: {self.theta}")
 
     def kinematics_callback(self, msg):
         velocities = np.array(

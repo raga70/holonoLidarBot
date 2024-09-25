@@ -86,4 +86,6 @@ if __name__ == "__main__":
     wheel = setup_wheel()
     velocities = np.array([0, 0, 1])
     ang_vel = wheel.calculate_wheel_velocities(velocities)
+    robot_velocities = wheel.calculate_robot_velocities(ang_vel)
     print(ang_vel)
+    print(robot_velocities)
