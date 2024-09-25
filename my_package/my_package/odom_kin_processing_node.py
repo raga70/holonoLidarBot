@@ -54,10 +54,10 @@ class KinOdomProcessing(Node):
         t.transform.translation.z = 0.0
 
         orientation =  euler_to_quaternion(0, 0, self.theta+np.pi)
-        t.transform.rotation.x = orientation[0] 
-        t.transform.rotation.y = orientation[1] 
-        t.transform.rotation.z = orientation[2] 
-        t.transform.rotation.w = orientation[3] 
+        t.transform.rotation.x = orientation[1] 
+        t.transform.rotation.y = orientation[2] 
+        t.transform.rotation.z = orientation[3] 
+        t.transform.rotation.w = orientation[0] 
 
         self.tf_broadcaster.sendTransform(t)      
 

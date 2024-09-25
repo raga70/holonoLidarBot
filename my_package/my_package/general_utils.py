@@ -27,10 +27,10 @@ def fill_odometry_message(x_pos, y_pos, theta, current_time, robot_velocities) -
 
         orientation = euler_to_quaternion(0, 0, theta)
         odom.pose.pose.orientation = Quaternion()
-        odom.pose.pose.orientation.x = orientation[0]
-        odom.pose.pose.orientation.y = orientation[1]
-        odom.pose.pose.orientation.z = orientation[2]
-        odom.pose.pose.orientation.w = orientation[3]
+        odom.pose.pose.orientation.x = orientation[1]
+        odom.pose.pose.orientation.y = orientation[2]
+        odom.pose.pose.orientation.z = orientation[3]
+        odom.pose.pose.orientation.w = orientation[0]
 
         odom.twist.twist.linear.x = robot_velocities[0]
         odom.twist.twist.linear.y = robot_velocities[1]
