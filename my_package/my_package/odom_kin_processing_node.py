@@ -77,6 +77,8 @@ class KinOdomProcessing(Node):
                 # it's not potential anguluar velocity it is angular velocity
                 ang_velocities = potential_ang_velocities
                 robot_velocities = self.wheel.calculate_robot_velocities(ang_velocities)
+                print("DEBUGGING")
+                print(robot_velocities)
                 self.update_position_with_odometry(delta_time, robot_velocities)
                 odom = fill_odometry_message(self.x, self.y, self.theta, current_time, robot_velocities)
                 var_gearbox_backlash = var_gearbox_backlash(ang_velocities, np.radians(0.5), self.wheel)
