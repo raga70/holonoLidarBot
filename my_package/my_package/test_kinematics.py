@@ -48,7 +48,7 @@ class TestKinematics(unittest.TestCase):
         )
         input_vel = np.array([
             0.0,
-            1.0,
+            -1.0,
             0.0
         ])
 
@@ -63,7 +63,7 @@ class TestKinematics(unittest.TestCase):
         )
         input_vel = np.array([
             0.0,
-            -1.0,
+            1.0,
             0.0
         ])
 
