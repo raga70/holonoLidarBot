@@ -5,6 +5,7 @@ import numpy as np
 import tf2_ros
 import serial 
 import math
+import rclpy
 
 from math_utils import euler_to_quaternion
 from kinematics_mechanum_wheel import KinematicMechanumWheel
@@ -118,3 +119,19 @@ class KinOdomProcessing(Node):
                 self.serial = serial.Serial("/dev/serial0", 9600)
                 print(f"{e}")
                 break
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = KinOdomProcessing()
+
+    try: 
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
