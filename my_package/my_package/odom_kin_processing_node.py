@@ -58,10 +58,13 @@ class KinOdomProcessing(Node):
     def odom_timer_callback(self):
         serial_read_back = self.serial_port.readline().strip()
         if serial_read_back:
-            current_time = self.get_clock().now()
-            delta_time = (current_time - self.last_time).nanoseconds / 1e9
             potential_ang_velocities = convert_serial_data_to_angular_velocities(serial_read_back, self.get_logger())
             if potential_ang_velocities is not None:
+                # only update time when we are sure we have received a valid message. Otherwise we would be missing distance, 
+                # Since we did not receive the correect velocities we didnt update the position of the robot
+                current_time = self.get_clock().now()
+                delta_time = (current_time - self.last_time).nanoseconds / 1e9
+                # it's not potential anguluar velocity it is angular velocity
                 ang_velocities = potential_ang_velocities
                 robot_velocities = self.wheel.calculate_robot_velocities(ang_velocities)
                 self.update_position_with_odometry(delta_time, robot_velocities)
