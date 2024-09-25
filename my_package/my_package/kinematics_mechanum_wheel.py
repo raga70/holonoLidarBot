@@ -37,16 +37,13 @@ class KinematicMechanumWheel:
                 (self.length*np.sin(self.betas[3]-self.yetas[3]-self.alphas[3]))/np.sin(self.yetas[3])
             ]
         ])
-        print(self.T_wo_r)
         self.T_wo_r = np.array([
             [1, -1, -(self.x_to_wheel+self.y_to_wheel)],
             [1, 1, (self.x_to_wheel + self.y_to_wheel)],
             [1, 1, -(self.x_to_wheel + self.y_to_wheel)],
             [1, -1, (self.x_to_wheel + self.y_to_wheel)],
         ])
-
         self.T = (1/self.wheel_radius) * self.T_wo_r
-        
 
         # NOTE(Chris): We should be doing this but the inversion of (T^T @ T) is singular no idea why
         #               Maybe the original T matrix is not completely correctly defined
@@ -63,7 +60,7 @@ class KinematicMechanumWheel:
         return self.T @ velocities 
 
     def calculate_wheel_velocities(self, velocities):
-        velocities[0] *= -1
+        # velocities[0] *= -1
         # rot_vel = z_rotation_matrix(np.radians(-90))@velocities[:2].T
         # rot_vel = np.append(rot_vel, velocities[2])
         # rot_vel[2] *= 3
