@@ -9,70 +9,9 @@ import serial
 import math
 from kinematics_mechanum_wheel import KinematicMechanumWheel
 from math_utils import euler_to_quaternion
+from variance_calculations import var_gearbox_backlash, var_resolution
+from general_utils import fill_odometry_message, convert_serial_data_to_angular_velocities
 import tf2_ros
-
-def var_resolution(wheel_radius, resolution):
-    """ Calculates the variance created by the encoder resolution.
-        This is in meters. The calculation is calculating how many radians
-        the encoder misses.
-
-    Args:
-        wheel_radius (_type_): wheel radius in meters 
-        resolution (_type_): Resolution of the encoder in ticks per revolution 
-    """
-    delta = (2*math.pi*wheel_radius) / resolution
-
-    return (delta/2)**2
-
-def var_gearbox_backlash(encoder_ang_vel, wheelbacklash, wheel):
-    """ Calculates the effect of the backlash on the velocities.
-        This is done by using the kinematics equation, so that we have
-        an accurate estimate of the contribution of the slippage of every wheel.
-        We only use the sign of the encoder angular velocities, and the magnitude of 
-        the wheelbacklash
-
-    Args:
-        encoder_ang_vel (_type_): An array with the angular velocities givenback by the encoders
-        wheelbacklash (_type_): the wheel backlash in radians 
-        wheel (_type_): Wheel object, used for the kinematics 
-    """
-
-    wheel_slippages = np.sign(encoder_ang_vel) * wheelbacklash
-    return wheel.calculate_robot_velocities(wheel_slippages)
-
-def convert_serial_data_to_angular_velocities(serial_read_back: str, logger) -> Optional[np.array]:
-    split_data = str(serial_read_back)[2:-1].split(',')
-    try:
-        omega_1, omega_2, omega_3, omega_4 = map(float, split_data)
-        if logger is not None:
-            logger.info(f"split data: {split_data}")
-        ang_velocities = np.array([omega_1, omega_2, omega_3, omega_4])
-        return ang_velocities
-    except Exception as e:
-        print("skipped updating odometry data")
-        print(e)
-        return None
-
-def fill_odometry_message(x_pos, y_pos, theta, current_time, robot_velocities) -> Odometry:
-        odom = Odometry()
-        odom.header.stamp = current_time.to_msg()
-        odom.header.frame_id = 'odom'
-        odom.child_frame_id = 'base_link'
-        odom.pose.pose.position.x = x_pos
-        odom.pose.pose.position.y = y_pos
-        odom.pose.pose.position.z = 0.0
-
-        orientation = euler_to_quaternion(0, 0, theta)
-        odom.pose.pose.orientation = Quaternion()
-        odom.pose.pose.orientation = orientation[0]
-        odom.pose.pose.orientation = orientation[1]
-        odom.pose.pose.orientation = orientation[2]
-        odom.pose.pose.orientation = orientation[3]
-
-        odom.twist.twist.linear.x = robot_velocities[0]
-        odom.twist.twist.linear.y = robot_velocities[1]
-        odom.twist.twist.angular.z = robot_velocities[2]
-        return odom
 
 class OdometryPublishing(Node):
 
