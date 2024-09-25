@@ -31,7 +31,7 @@ class KinOdomProcessing(Node):
         angle_from_wheels = np.pi/2
         self.wheel = KinematicMechanumWheel(y_to_wheel, x_to_wheel, radius, angle_from_wheels)
         # Setup serial port
-        self.serial = serial.Serial("/dev/Serial0", 9600)
+        self.serial = serial.Serial("/dev/serial0", 9600)
         # Setup timestamps for delta time calculations
         self.last_time = self.get_clock().now()
         # Calculate constnat variances for covariance matrix for odometry message
