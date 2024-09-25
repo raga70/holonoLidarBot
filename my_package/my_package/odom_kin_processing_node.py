@@ -25,6 +25,9 @@ class KinOdomProcessing(Node):
         # Setup for wheel object instance
         y_to_wheel = (15/100)
         x_to_wheel =  (15/100)
+        self.x = 0
+        self.y = 0
+        self.theta = 0
         radius = ((8/2)/100) 
         self.radius = radius
         self.max_angular_velocities = 60
