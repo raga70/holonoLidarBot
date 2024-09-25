@@ -14,7 +14,7 @@ from general_utils import convert_serial_data_to_angular_velocities, fill_odomet
 class KinOdomProcessing(Node):
 
     def __init__(self) -> None:
-        super().__init__('kinematics_processing_subscriber_publisher')
+        super().__init__('kin_odom_publisher')
         # Setup publishing and subscriptions
         timer_period = 0.1
         self.subscription = self.create_subscription(Twist, 'turtle1/cmd_vel', self.kinematics_callback, 10)
