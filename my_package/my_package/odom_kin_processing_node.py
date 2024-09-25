@@ -61,7 +61,7 @@ class KinOdomProcessing(Node):
         serial_read_back = self.serial.readline().strip()
         if serial_read_back:
             potential_ang_velocities = convert_serial_data_to_angular_velocities(serial_read_back, self.get_logger())
-            if potential_ang_velocities is not None:
+            if potential_ang_velocities is not None and len(potential_ang_velocities) == 4 and type(potential_ang_velocities) == float:
                 # only update time when we are sure we have received a valid message. Otherwise we would be missing distance, 
                 # Since we did not receive the correect velocities we didnt update the position of the robot
                 current_time = self.get_clock().now()
