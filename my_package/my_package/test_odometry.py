@@ -19,7 +19,8 @@ class TestKinematics(unittest.TestCase):
             ]
         )
         ang_vel = self.wheel.test_calculate_wheel_velocities(input_vel)
-        converted_vels = self.wheel.calculate_robot_velocities(ang_vel)
+        print(ang_vel)
+        converted_vels = self.wheel.test_calculate_robot_velocities(ang_vel)
         self.assertTrue((input_vel == converted_vels).all(), f"{input_vel} -> {converted_vels}")
 
     def test_left(self):
@@ -29,7 +30,7 @@ class TestKinematics(unittest.TestCase):
             ]
         )
         ang_vel = self.wheel.test_calculate_wheel_velocities(input_vel)
-        converted_vels = self.wheel.calculate_robot_velocities(ang_vel)
+        converted_vels = self.wheel.test_calculate_robot_velocities(ang_vel)
         self.assertTrue((input_vel == converted_vels).all(), f"{input_vel} -> {converted_vels}")
         
     def test_fwd(self):
@@ -39,7 +40,7 @@ class TestKinematics(unittest.TestCase):
             ]
         )
         ang_vel = self.wheel.test_calculate_wheel_velocities(input_vel)
-        converted_vels = self.wheel.calculate_robot_velocities(ang_vel)
+        converted_vels = self.wheel.test_calculate_robot_velocities(ang_vel)
         self.assertTrue((input_vel == converted_vels).all(), f"{input_vel} -> {converted_vels}")
 
     def test_bck(self):
@@ -49,7 +50,7 @@ class TestKinematics(unittest.TestCase):
             ]
         )
         ang_vel = self.wheel.test_calculate_wheel_velocities(input_vel)
-        converted_vels = self.wheel.calculate_robot_velocities(ang_vel)
+        converted_vels = self.wheel.test_calculate_robot_velocities(ang_vel)
         self.assertTrue((input_vel == converted_vels).all(), f"{input_vel} -> {converted_vels}")
 
     def test_rot_left(self):
@@ -59,7 +60,7 @@ class TestKinematics(unittest.TestCase):
             ]
         )
         ang_vel = self.wheel.test_calculate_wheel_velocities(input_vel)
-        converted_vels = self.wheel.calculate_robot_velocities(ang_vel)
+        converted_vels = self.wheel.test_calculate_robot_velocities(ang_vel)
         self.assertTrue((input_vel == converted_vels).all(), f"{input_vel} -> {converted_vels}")
 
     def test_rot_right(self):
@@ -69,7 +70,7 @@ class TestKinematics(unittest.TestCase):
             ]
         )
         ang_vel = self.wheel.test_calculate_wheel_velocities(input_vel)
-        converted_vels = self.wheel.calculate_robot_velocities(ang_vel)
+        converted_vels = self.wheel.test_calculate_robot_velocities(ang_vel)
         self.assertTrue((input_vel == converted_vels).all(), f"{input_vel} -> {converted_vels}")
 if __name__ == "__main__":
     unittest.main()

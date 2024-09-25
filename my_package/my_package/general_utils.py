@@ -3,7 +3,7 @@ from geometry_msgs.msg import Quaternion
 import numpy as np
 from nav_msgs.msg import Odometry
 from math_utils import euler_to_quaternion
-def convert_serial_data_to_angular_velocities(serial_read_back: str, logger) -> Optional[np.array]:
+def convert_serial_data_to_angular_velocities(serial_read_back: bytes, logger):
     split_data = str(serial_read_back)[2:-1].split(',')
     try:
         omega_1, omega_2, omega_3, omega_4 = map(float, split_data)

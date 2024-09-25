@@ -57,19 +57,30 @@ class KinematicMechanumWheel:
         ])
 
     def test_calculate_wheel_velocities(self, velocities):
-        return self.T @ velocities 
+        rot_vel = z_rotation_matrix(np.radians(-90))@velocities[:2].T
+        rot_vel = np.append(rot_vel, velocities[2])
+        wheel_velocities = self.T @ rot_vel
+        wheel_velocities = np.round(wheel_velocities, decimals=10)
+        return wheel_velocities
 
     def calculate_wheel_velocities(self, velocities):
-        # velocities[0] *= -1
-        # rot_vel = z_rotation_matrix(np.radians(-90))@velocities[:2].T
-        # rot_vel = np.append(rot_vel, velocities[2])
-        # rot_vel[2] *= 3
-        return self.T @ velocities 
+        rot_vel = z_rotation_matrix(np.radians(-90))@velocities[:2].T
+        rot_vel = np.append(rot_vel, velocities[2])
+        wheel_velocities = self.T @ rot_vel
+        wheel_velocities = np.round(wheel_velocities, decimals=10)
+        return wheel_velocities
+
+    def test_calculate_robot_velocities(self, ang_velocities):
+        robot_velocities = self.T_fwd @ ang_velocities 
+        rotated_robot_velocities = z_rotation_matrix(np.radians(90))@robot_velocities[:2].T
+        rotated_robot_velocities = np.append(rotated_robot_velocities, robot_velocities[2])
+        rotated_robot_velocities = np.round(rotated_robot_velocities, decimals=10)
+        return rotated_robot_velocities 
 
     def calculate_robot_velocities(self, ang_velocities):
-        r_vel = self.T_fwd @ ang_velocities
-        #rot_vel = z_rotation_matrix(np.radians(-90))@r_vel[:2].T
-        return r_vel
+        robot_velocities = self.T_fwd @ ang_velocities 
+        robot_velocities = np.round(robot_velocities, decimals=10)
+        return robot_velocities 
 
 def setup_wheel() -> KinematicMechanumWheel:
     y_to_wheel = (15/100)
@@ -84,5 +95,3 @@ if __name__ == "__main__":
     velocities = np.array([1, 0, 0])
     ang_vel = wheel.calculate_wheel_velocities(velocities)
     robot_velocities = wheel.calculate_robot_velocities(ang_vel)
-    print(ang_vel)
-    print(robot_velocities)

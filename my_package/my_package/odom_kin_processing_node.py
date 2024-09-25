@@ -73,15 +73,16 @@ class KinOdomProcessing(Node):
             print("DEBUGGING:")
             print(potential_ang_velocities)
             if potential_ang_velocities is not None:
-            #if potential_ang_velocities is not None and len(potential_ang_velocities) == 4 and type(potential_ang_velocities) == float:
                 # only update time when we are sure we have received a valid message. Otherwise we would be missing distance, 
                 # Since we did not receive the correect velocities we didnt update the position of the robot
                 current_time = self.get_clock().now()
                 delta_time = (current_time - self.last_time).nanoseconds / 1e9
                 # it's not potential anguluar velocity it is angular velocity
                 ang_velocities = (2*np.pi*((potential_ang_velocities-self.old_ang_velocity)) / 1440) / delta_time
+                ang_velocities *= np.array([1, -1, 1, -1])
                 self.old_ang_velocity = potential_ang_velocities
                 robot_velocities = self.wheel.calculate_robot_velocities(ang_velocities)
+
                 print("DEBUGGING")
                 print(robot_velocities)
                 self.update_position_with_odometry(delta_time, robot_velocities)
@@ -105,7 +106,7 @@ class KinOdomProcessing(Node):
 
                 self.odom_publisher.publish(odom)
                 self.tf_publish(current_time)
-                self.last_time - current_time
+                self.last_time = current_time
 
     def update_position_with_odometry(self, delta_time, robot_velocities):
         delta_x = robot_velocities[0] * delta_time
