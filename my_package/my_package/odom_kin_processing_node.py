@@ -7,7 +7,7 @@ import serial
 import math
 import rclpy
 
-from math_utils import euler_to_quaternion
+from math_utils import euler_to_quaternion, z_rotation_matrix
 from kinematics_mechanum_wheel import KinematicMechanumWheel
 from variance_calculations import var_gearbox_backlash, var_resolution
 from general_utils import convert_serial_data_to_angular_velocities, fill_odometry_message
@@ -112,15 +112,18 @@ class KinOdomProcessing(Node):
         delta_x = robot_velocities[0] * delta_time
         delta_y = robot_velocities[1] * delta_time
         delta_theta = robot_velocities[2] * delta_time
-
-        self.x += delta_y * math.cos(self.theta) - delta_x * math.sin(self.theta)
-        self.y += delta_y * math.sin(self.theta) + delta_x * math.cos(self.theta)
+        rot_matrix = z_rotation_matrix(-self.theta)
+        new_coords = rot_matrix @ np.array([self.x, self.y])
+        self.x = new_coords[0]
+        self.y = new_coords[1]
+        # self.x += delta_y * math.cos(self.theta) - delta_x * math.sin(self.theta)
+        # self.y += delta_y * math.sin(self.theta) + delta_x * math.cos(self.theta)
         self.theta += delta_theta
         self.get_logger().info(f"x: {self.x}, y: {self.y}, rot: {self.theta}")
 
     def kinematics_callback(self, msg):
         velocities = np.array(
-            [-1*msg.linear.x, msg.linear.y, 3*msg.angular.z]
+            [msg.linear.x, msg.linear.y, 3*msg.angular.z]
             )
         wheel_ang_velocities = self.wheel.calculate_wheel_velocities(velocities)
         wheel_ang_velocities = wheel_ang_velocities / (self.max_angular_velocities/self.max_output_angular_velocities)
