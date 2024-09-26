@@ -112,12 +112,8 @@ class KinOdomProcessing(Node):
         delta_x = robot_velocities[0] * delta_time
         delta_y = robot_velocities[1] * delta_time
         delta_theta = robot_velocities[2] * delta_time
-        rot_matrix = z_rotation_matrix(-self.theta)
-        new_coords = rot_matrix @ np.array([self.x, self.y])
-        self.x = new_coords[0]
-        self.y = new_coords[1]
-        # self.x += delta_y * math.cos(self.theta) - delta_x * math.sin(self.theta)
-        # self.y += delta_y * math.sin(self.theta) + delta_x * math.cos(self.theta)
+        self.x += delta_y * math.cos(self.theta) - delta_x * math.sin(self.theta)
+        self.y += delta_y * math.sin(self.theta) + delta_x * math.cos(self.theta)
         self.theta += delta_theta
         self.get_logger().info(f"x: {self.x}, y: {self.y}, rot: {self.theta}")
 
