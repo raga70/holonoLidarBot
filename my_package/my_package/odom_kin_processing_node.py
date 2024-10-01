@@ -30,13 +30,14 @@ class KinOdomProcessing(Node):
         self.theta = 0
         radius = ((8/2)/100) 
         self.radius = radius
+        self.baud = 115200
         self.max_angular_velocities = 60
         self.max_output_angular_velocities = 11
         angle_from_wheels = np.pi/2
         self.wheel = KinematicMechanumWheel(y_to_wheel, x_to_wheel, radius, angle_from_wheels)
         self.old_ang_velocity = np.array([0, 0, 0, 0])
         # Setup serial port
-        self.serial = serial.Serial("/dev/serial0", 9600)
+        self.serial = serial.Serial("/dev/serial0", self.baud)
         # Setup timestamps for delta time calculations
         self.last_time = self.get_clock().now()
         # Calculate constnat variances for covariance matrix for odometry message
@@ -66,7 +67,7 @@ class KinOdomProcessing(Node):
         try:
             serial_read_back = self.serial.readline().strip()
         except Exception as e:
-            self.serial = serial.Serial("/dev/serial0", 9600)
+            self.serial = serial.Serial("/dev/serial0", self.baud)
             print("Exception:",e)
         if serial_read_back:
             potential_ang_velocities = convert_serial_data_to_angular_velocities(serial_read_back, self.get_logger())
@@ -133,7 +134,7 @@ class KinOdomProcessing(Node):
             try:
                 self.serial.write(serial_message)
             except Exception as e:
-                self.serial = serial.Serial("/dev/serial0", 9600)
+                self.serial = serial.Serial("/dev/serial0", self.baud)
                 print(f"{e}")
                 break
 
