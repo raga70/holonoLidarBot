@@ -68,7 +68,7 @@ void loop()
       d_previousTime = currentTime;
   }
 
-  if(currentTime - lastReceivedTime >= 300){
+  if(currentTime - lastReceivedTime >= 200){
     // Serial.println("No command received");
     lastReceivedTime = currentTime;
     for(int i = 0; i < 4; i++){
@@ -119,7 +119,7 @@ void processSerialInput(HardwareSerial &thisserial) {
         } else {
           motors[motor].stop();
         }
-        lastReceivedTime = currentTime;
+        
         // Serial.print("Motor: ");
         // Serial.print(motor);
         // Serial.print(", Speed: ");
