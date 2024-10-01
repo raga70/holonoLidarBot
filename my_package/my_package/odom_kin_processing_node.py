@@ -7,10 +7,11 @@ import serial
 import math
 import rclpy
 
-from math_utils import euler_to_quaternion
+from math_utils import euler_to_quaternion, z_rotation_matrix
 from kinematics_mechanum_wheel import KinematicMechanumWheel
 from variance_calculations import var_gearbox_backlash, var_resolution
 from general_utils import convert_serial_data_to_angular_velocities, fill_odometry_message
+import time
 
 class KinOdomProcessing(Node):
 
@@ -30,13 +31,14 @@ class KinOdomProcessing(Node):
         self.theta = 0
         radius = ((8/2)/100) 
         self.radius = radius
+        self.baud = 115200
         self.max_angular_velocities = 60
         self.max_output_angular_velocities = 11
         angle_from_wheels = np.pi/2
         self.wheel = KinematicMechanumWheel(y_to_wheel, x_to_wheel, radius, angle_from_wheels)
         self.old_ang_velocity = np.array([0, 0, 0, 0])
         # Setup serial port
-        self.serial = serial.Serial("/dev/serial0", 9600)
+        self.serial = serial.Serial("/dev/serial0", self.baud)
         # Setup timestamps for delta time calculations
         self.last_time = self.get_clock().now()
         # Calculate constnat variances for covariance matrix for odometry message
@@ -53,7 +55,7 @@ class KinOdomProcessing(Node):
         t.transform.translation.y = self.y
         t.transform.translation.z = 0.0
 
-        orientation =  euler_to_quaternion(0, 0, self.theta+np.pi)
+        orientation =  euler_to_quaternion(0, 0, self.theta)
         t.transform.rotation.x = orientation[1] 
         t.transform.rotation.y = orientation[2] 
         t.transform.rotation.z = orientation[3] 
@@ -66,22 +68,23 @@ class KinOdomProcessing(Node):
         try:
             serial_read_back = self.serial.readline().strip()
         except Exception as e:
-            self.serial = serial.Serial("/dev/serial0", 9600)
+            self.serial = serial.Serial("/dev/serial0", self.baud)
             print("Exception:",e)
         if serial_read_back:
             potential_ang_velocities = convert_serial_data_to_angular_velocities(serial_read_back, self.get_logger())
             print("DEBUGGING:")
             print(potential_ang_velocities)
             if potential_ang_velocities is not None:
-            #if potential_ang_velocities is not None and len(potential_ang_velocities) == 4 and type(potential_ang_velocities) == float:
                 # only update time when we are sure we have received a valid message. Otherwise we would be missing distance, 
                 # Since we did not receive the correect velocities we didnt update the position of the robot
                 current_time = self.get_clock().now()
                 delta_time = (current_time - self.last_time).nanoseconds / 1e9
                 # it's not potential anguluar velocity it is angular velocity
                 ang_velocities = (2*np.pi*((potential_ang_velocities-self.old_ang_velocity)) / 1440) / delta_time
+                ang_velocities *= np.array([-1, 1, -1, 1])
                 self.old_ang_velocity = potential_ang_velocities
                 robot_velocities = self.wheel.calculate_robot_velocities(ang_velocities)
+
                 print("DEBUGGING")
                 print(robot_velocities)
                 self.update_position_with_odometry(delta_time, robot_velocities)
@@ -105,20 +108,21 @@ class KinOdomProcessing(Node):
 
                 self.odom_publisher.publish(odom)
                 self.tf_publish(current_time)
-                self.last_time - current_time
+                self.last_time = current_time
 
     def update_position_with_odometry(self, delta_time, robot_velocities):
         delta_x = robot_velocities[0] * delta_time
         delta_y = robot_velocities[1] * delta_time
         delta_theta = robot_velocities[2] * delta_time
-
-        self.x += delta_x * math.cos(self.theta) - delta_y * math.sin(self.theta)
-        self.y += delta_x * math.cos(self.theta) + delta_y * math.sin(self.theta)
+        self.x -= delta_y * math.cos(self.theta) - delta_x * math.sin(self.theta)
+        self.y += delta_y * math.sin(self.theta) + delta_x * math.cos(self.theta)
         self.theta += delta_theta
+        self.get_logger().info(f"x: {self.x}, y: {self.y}, rot: {self.theta}")
 
     def kinematics_callback(self, msg):
+        start = time.time()
         velocities = np.array(
-            [msg.linear.x, msg.linear.y, msg.angular.z]
+            [-1*msg.linear.x, msg.linear.y, 3*msg.angular.z]
             )
         wheel_ang_velocities = self.wheel.calculate_wheel_velocities(velocities)
         wheel_ang_velocities = wheel_ang_velocities / (self.max_angular_velocities/self.max_output_angular_velocities)
@@ -132,9 +136,11 @@ class KinOdomProcessing(Node):
             try:
                 self.serial.write(serial_message)
             except Exception as e:
-                self.serial = serial.Serial("/dev/serial0", 9600)
+                self.serial = serial.Serial("/dev/serial0", self.baud)
                 print(f"{e}")
                 break
+        end = time.time()
+        self.get_logger().info(f"time elapsed: {end - start}")
 
 def main(args=None):
     rclpy.init(args=args)

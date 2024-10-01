@@ -1,5 +1,6 @@
 import numpy as np
 import math
+from math import radians
 
 def z_rotation_matrix(z):
     return np.array([
@@ -42,4 +43,11 @@ def euler_to_quaternion(x, y, z):
     z = cr * cp * sy - sr * sp * cy
 
     return (w, x, y, z)
+
+def main():
+    euler_angles = euler_to_quaternion(radians(90), radians(45), radians(30))
+    print(euler_angles)
+
+if __name__ == "__main__":
+    main()
 

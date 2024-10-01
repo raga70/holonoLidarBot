@@ -19,8 +19,8 @@ class TestKinematics(unittest.TestCase):
             ]
         )
         input_vel = np.array([
-            1.0,
             0.0,
+            1.0,
             0.0
         ])
         ang_vel = self.wheel.test_calculate_wheel_velocities(input_vel)
@@ -33,8 +33,8 @@ class TestKinematics(unittest.TestCase):
             ]
         )
         input_vel = np.array([
-            -1.0,
             0.0,
+            -1.0,
             0.0
         ])
         ang_vel = self.wheel.test_calculate_wheel_velocities(input_vel)
@@ -47,8 +47,8 @@ class TestKinematics(unittest.TestCase):
             ]
         )
         input_vel = np.array([
-            0.0,
             -1.0,
+            0.0,
             0.0
         ])
 
@@ -62,8 +62,8 @@ class TestKinematics(unittest.TestCase):
             ]
         )
         input_vel = np.array([
-            0.0,
             1.0,
+            0.0,
             0.0
         ])
 
@@ -78,7 +78,7 @@ class TestKinematics(unittest.TestCase):
             ]
         )
         input_vel = np.array([
-            1.0,
+            -1.0,
             1.0,
             0.0
         ])
@@ -94,7 +94,7 @@ class TestKinematics(unittest.TestCase):
         )
         input_vel = np.array([
             -1.0,
-            1.0,
+            -1.0,
             0.0
         ])
 
@@ -109,7 +109,7 @@ class TestKinematics(unittest.TestCase):
         )
         input_vel = np.array([
             1.0,
-            -1.0,
+            1.0,
             0.0
         ])
 
@@ -123,7 +123,7 @@ class TestKinematics(unittest.TestCase):
             ]
         )
         input_vel = np.array([
-            -1.0,
+            1.0,
             -1.0,
             0.0
         ])
