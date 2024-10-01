@@ -11,6 +11,7 @@ from math_utils import euler_to_quaternion, z_rotation_matrix
 from kinematics_mechanum_wheel import KinematicMechanumWheel
 from variance_calculations import var_gearbox_backlash, var_resolution
 from general_utils import convert_serial_data_to_angular_velocities, fill_odometry_message
+import time
 
 class KinOdomProcessing(Node):
 
@@ -119,6 +120,7 @@ class KinOdomProcessing(Node):
         self.get_logger().info(f"x: {self.x}, y: {self.y}, rot: {self.theta}")
 
     def kinematics_callback(self, msg):
+        start = time.time()
         velocities = np.array(
             [-1*msg.linear.x, msg.linear.y, 3*msg.angular.z]
             )
@@ -137,6 +139,8 @@ class KinOdomProcessing(Node):
                 self.serial = serial.Serial("/dev/serial0", self.baud)
                 print(f"{e}")
                 break
+        end = time.time()
+        print(f"Time taken: {end-start}")
 
 def main(args=None):
     rclpy.init(args=args)
