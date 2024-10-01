@@ -140,7 +140,7 @@ class KinOdomProcessing(Node):
                 print(f"{e}")
                 break
         end = time.time()
-        print(f"Time taken: {end-start}")
+        self.get_logger().info(f"time elapsed: {end - start}")
 
 def main(args=None):
     rclpy.init(args=args)
