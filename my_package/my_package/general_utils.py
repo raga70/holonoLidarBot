@@ -32,7 +32,7 @@ def fill_odometry_message(x_pos, y_pos, theta, current_time, robot_velocities) -
         odom.pose.pose.orientation.z = orientation[3]
         odom.pose.pose.orientation.w = orientation[0]
 
-        odom.twist.twist.linear.x = -robot_velocities[1]
+        odom.twist.twist.linear.x = robot_velocities[1]
         odom.twist.twist.linear.y = robot_velocities[0]
         odom.twist.twist.angular.z = robot_velocities[2]
         return odom
