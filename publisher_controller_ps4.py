@@ -64,8 +64,8 @@ class MinimalPublisher(Node):
         # Get joystick inputs
         joystick_values = self.joystick.read()
         
-        self.X = joystick_values[0]  # Left joystick X controls linear.y
-        self.Y = joystick_values[1]  # Left joystick Y controls linear.x
+        self.X = joystick_values[1]  # Left joystick X controls linear.y
+        self.Y = joystick_values[0]  # Left joystick Y controls linear.x
         self.A = joystick_values[2]  # Right joystick X controls angular.z
 
         # Publish Twist message
