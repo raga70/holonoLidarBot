@@ -82,9 +82,9 @@ class KinOdomProcessing(Node):
                 # it's not potential anguluar velocity it is angular velocity
                 ang_velocities = (2*np.pi*((potential_ang_velocities-self.old_ang_velocity)) / 1440) / delta_time
                 self.old_ang_velocity = potential_ang_velocities
-                self.get_logger().info(f"encoder ang velocities {ang_velocities}")
+                #self.get_logger().info(f"encoder ang velocities {ang_velocities}")
                 robot_velocities = self.wheel.calculate_robot_velocities(ang_velocities)
-                self.get_logger().info(f"robot velocities: {robot_velocities}")
+                #self.get_logger().info(f"robot velocities: {robot_velocities}")
 
                 self.update_position_with_odometry(delta_time, robot_velocities)
                 odom = fill_odometry_message(self.x, self.y, self.theta, current_time, robot_velocities)
@@ -122,9 +122,9 @@ class KinOdomProcessing(Node):
         delta_x = (vx * np.cos(self.theta) - vy * np.sin(self.theta)) * delta_time
         delta_y = (vx * np.sin(self.theta) + vy * np.cos(self.theta)) * delta_time
         self.x += delta_x
-        self.get_logger().info(f"{delta_x}")
+        print(delta_x)
         self.y += delta_y
-        self.get_logger().info(f"{delta_y}")
+        print(delta_y)
         self.theta += vtheta*delta_time
 
 
