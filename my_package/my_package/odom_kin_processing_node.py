@@ -81,7 +81,6 @@ class KinOdomProcessing(Node):
                 delta_time = (current_time - self.last_time).nanoseconds / 1e9
                 # it's not potential anguluar velocity it is angular velocity
                 ang_velocities = (2*np.pi*((potential_ang_velocities-self.old_ang_velocity)) / 1440) / delta_time
-                ang_velocities *= np.array([-1, 1, -1, 1])
                 self.old_ang_velocity = potential_ang_velocities
                 robot_velocities = self.wheel.calculate_robot_velocities(ang_velocities)
 
