@@ -82,10 +82,10 @@ class KinOdomProcessing(Node):
                 # it's not potential anguluar velocity it is angular velocity
                 ang_velocities = (2*np.pi*((potential_ang_velocities-self.old_ang_velocity)) / 1440) / delta_time
                 self.old_ang_velocity = potential_ang_velocities
+                self.get_logger().info(f"encoder ang velocities {ang_velocities}")
                 robot_velocities = self.wheel.calculate_robot_velocities(ang_velocities)
+                self.get_logger().info(f"robot velocities: {robot_velocities}")
 
-                print("DEBUGGING")
-                print(robot_velocities)
                 self.update_position_with_odometry(delta_time, robot_velocities)
                 odom = fill_odometry_message(self.x, self.y, self.theta, current_time, robot_velocities)
                 #var_gearbox_backlash = var_gearbox_backlash(ang_velocities, np.radians(0.5), self.wheel)
@@ -116,7 +116,6 @@ class KinOdomProcessing(Node):
         self.x -= delta_y * math.cos(self.theta) - delta_x * math.sin(self.theta)
         self.y += delta_y * math.sin(self.theta) + delta_x * math.cos(self.theta)
         self.theta += delta_theta
-        self.get_logger().info(f"x: {self.x}, y: {self.y}, rot: {self.theta}")
 
     def kinematics_callback(self, msg):
         start = time.time()
@@ -125,7 +124,6 @@ class KinOdomProcessing(Node):
             )
         wheel_ang_velocities = self.wheel.calculate_wheel_velocities(velocities)
         wheel_ang_velocities = wheel_ang_velocities / (self.max_angular_velocities/self.max_output_angular_velocities)
-        self.get_logger().info(f"{wheel_ang_velocities}")
         # 1st motor front left first value 
         # 2nd motor front right second
         # 3rd motor back left third
@@ -139,7 +137,6 @@ class KinOdomProcessing(Node):
                 print(f"{e}")
                 break
         end = time.time()
-        self.get_logger().info(f"time elapsed: {end - start}")
 
 def main(args=None):
     rclpy.init(args=args)
