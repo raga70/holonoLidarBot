@@ -43,8 +43,8 @@ class XboxController(object):
     def _monitor_controller(self):
         while True:
             pygame.event.pump()
-            self.LeftJoystickY = self.joystick.get_axis(1)   # normalize between -1 and 1
-            self.LeftJoystickX = self.joystick.get_axis(0)   # normalize between -1 and
+            self.LeftJoystickY = self.joystick.get_axis(0)   # normalize between -1 and 1
+            self.LeftJoystickX = self.joystick.get_axis(1)   # normalize between -1 and
             self.RightJoystickX = self.joystick.get_axis(3)   # normalize between -1 and 1
 class MinimalPublisher(Node):
 
