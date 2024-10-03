@@ -106,6 +106,7 @@ class KinOdomProcessing(Node):
                 #                      0, 0, 0, 0, 0, variances[2]]  
 
                 self.odom_publisher.publish(odom)
+                self.tf_publish(current_time)
                 self.last_time = current_time
 
     def update_position_with_odometry(self, delta_time, robot_velocities):
