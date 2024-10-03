@@ -122,10 +122,10 @@ class KinOdomProcessing(Node):
         # Optional quadrant-based sign adjustments
         print(f'theta: {np.rad2deg(self.theta)}')
         if np.pi / 2 <= self.theta < np.pi:  # Second quadrant (90 to 180 degrees)
-            delta_x = -delta_x
-            # tmp = delta_x
-            # delta_x = -delta_y  # Cos is negative in second quadrant
-            # delta_y = tmp 
+            #delta_x = -delta_x
+            tmp = delta_x
+            delta_x = delta_y  # Cos is negative in second quadrant
+            delta_y = tmp 
         elif np.pi <= self.theta < 3*np.pi / 2:  # Third quadrant (180 to 270 degrees)
             print("DEBUG")
             delta_x = delta_x  # Cos is negative
