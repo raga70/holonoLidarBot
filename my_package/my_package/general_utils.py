@@ -21,8 +21,8 @@ def fill_odometry_message(x_pos, y_pos, theta, current_time, robot_velocities) -
         odom.header.stamp = current_time.to_msg()
         odom.header.frame_id = 'odom'
         odom.child_frame_id = 'base_link'
-        odom.pose.pose.position.x = x_pos
-        odom.pose.pose.position.y = y_pos
+        odom.pose.pose.position.x = -x_pos
+        odom.pose.pose.position.y = -y_pos
         odom.pose.pose.position.z = 0.0
 
         orientation = euler_to_quaternion(0, 0, theta)
