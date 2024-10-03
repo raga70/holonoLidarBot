@@ -51,8 +51,8 @@ class KinOdomProcessing(Node):
         t.header.frame_id = 'odom'
         t.child_frame_id = 'base_link'
 
-        t.transform.translation.x = self.x
-        t.transform.translation.y = self.y
+        t.transform.translation.x = self.y
+        t.transform.translation.y = self.x
         t.transform.translation.z = 0.0
 
         orientation =  euler_to_quaternion(0, 0, self.theta)
