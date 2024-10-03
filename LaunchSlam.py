@@ -13,7 +13,7 @@ def generate_launch_description():
                 'slam_toolbox': 'true',
                 'odom_frame': 'odom',
                 'map_frame': 'map',
-                'base_frame': 'base_link',  # Your base frame
+                'base_frame': 'base_footprint',  # Your base frame
                 'scan_topic': '/scan',  # Your scan topic
                 'update_frame': 'laser',  # Your laser frame
                 'resolution': 0.05,  # Grid resolution

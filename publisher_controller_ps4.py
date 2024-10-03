@@ -1,3 +1,4 @@
+import os
 import pygame
 import time
 import math
@@ -52,7 +53,7 @@ class MinimalPublisher(Node):
 
     def __init__(self):
         super().__init__('minimal_publisher')
-        self.publisher_ = self.create_publisher(Twist, 'turtle1/cmd_vel', 10)
+        self.publisher_ = self.create_publisher(Twist, '/cmd_vel', 10)
         self.timer = self.create_timer(0.1, self.timer_callback)
         self.X = 0.0
         self.Y = 0.0
@@ -79,6 +80,7 @@ class MinimalPublisher(Node):
         
 
 def main(args=None):
+    os.system("export SDL_JOYSTICK_DEVICE=/dev/input/js0")
     print("Xbox contol ACTIVE!")
     rclpy.init(args=args)
     minimal_publisher = MinimalPublisher()

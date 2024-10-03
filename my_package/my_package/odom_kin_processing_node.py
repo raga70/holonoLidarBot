@@ -19,7 +19,7 @@ class KinOdomProcessing(Node):
         super().__init__('kin_odom_publisher')
         # Setup publishing and subscriptions
         timer_period = 0.1
-        self.subscription = self.create_subscription(Twist, 'turtle1/cmd_vel', self.kinematics_callback, 10)
+        self.subscription = self.create_subscription(Twist, '/cmd_vel', self.kinematics_callback, 10)
         self.odom_publisher = self.create_publisher(Odometry, '/odom', 10)
         self.tf_broadcaster = tf2_ros.TransformBroadcaster(self)
         self.timer = self.create_timer(timer_period, self.odom_timer_callback)
@@ -49,7 +49,7 @@ class KinOdomProcessing(Node):
         t = TransformStamped()
         t.header.stamp = current_time.to_msg()
         t.header.frame_id = 'odom'
-        t.child_frame_id = 'base_link'
+        t.child_frame_id = 'base_footprint'
 
         t.transform.translation.x = self.y
         t.transform.translation.y = self.x
