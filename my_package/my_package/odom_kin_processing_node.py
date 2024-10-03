@@ -72,8 +72,6 @@ class KinOdomProcessing(Node):
             print("Exception:",e)
         if serial_read_back:
             potential_ang_velocities = convert_serial_data_to_angular_velocities(serial_read_back, self.get_logger())
-            print("DEBUGGING:")
-            print(potential_ang_velocities)
             if potential_ang_velocities is not None:
                 # only update time when we are sure we have received a valid message. Otherwise we would be missing distance, 
                 # Since we did not receive the correect velocities we didnt update the position of the robot
@@ -122,11 +120,11 @@ class KinOdomProcessing(Node):
         delta_y = (vx * math.cos(self.theta) - vy * math.sin(self.theta)) * delta_time
         delta_x = (vx * math.sin(self.theta) + vy * math.cos(self.theta)) * delta_time
         # Optional quadrant-based sign adjustments
-        print(self.theta)
+        print(f'theta: {np.rad2deg(self.theta)}')
         if np.pi / 2 <= self.theta < np.pi:  # Second quadrant (90 to 180 degrees)
             delta_x = -delta_x  # Cos is negative in second quadrant
         elif np.pi <= self.theta < 3*np.pi / 2:  # Third quadrant (180 to 270 degrees)
-            print("DEGBUG")
+            print("DEBUG")
             delta_x = -delta_x  # Cos is negative
             delta_y = -delta_y  # Sin is negative in the third quadrant
         elif np.pi / 2 <= self.theta < 0:  # Fourth quadrant (270 to 360 degrees or -90 to 0 degrees)
