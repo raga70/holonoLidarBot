@@ -110,12 +110,22 @@ class KinOdomProcessing(Node):
                 self.last_time = current_time
 
     def update_position_with_odometry(self, delta_time, robot_velocities):
-        delta_x = robot_velocities[0] * delta_time
-        delta_y = robot_velocities[1] * delta_time
-        delta_theta = robot_velocities[2] * delta_time
-        self.x += delta_y * math.cos(self.theta) - delta_x * math.sin(self.theta)
-        self.y += delta_y * math.sin(self.theta) + delta_x * math.cos(self.theta)
-        self.theta += delta_theta
+        # delta_x = robot_velocities[0] * delta_time
+        # delta_y = robot_velocities[1] * delta_time
+        # delta_theta = robot_velocities[2] * delta_time
+        # self.theta += delta_theta
+        # self.x += delta_y * math.cos(self.theta) - delta_x * math.sin(self.theta)
+        # self.y += delta_y * math.sin(self.theta) + delta_x * math.cos(self.theta)
+        vx = robot_velocities[0]
+        vy = robot_velocities[1]
+        vtheta = robot_velocities[2]
+        delta_x = (vx * math.cos(self.theta) - vy * math.sin(self.theta)) * delta_time
+        delta_y = (vx * math.sin(self.theta) - vy * math.cos(self.theta)) * delta_time
+        self.x += delta_x
+        self.y += delta_y
+        self.theta += vtheta*delta_time
+
+
 
     def kinematics_callback(self, msg):
         start = time.time()
