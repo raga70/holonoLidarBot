@@ -122,7 +122,7 @@ class KinOdomProcessing(Node):
     def kinematics_callback(self, msg):
         start = time.time()
         velocities = np.array(
-            [-1*msg.linear.x, msg.linear.y, 3*msg.angular.z]
+            [msg.linear.x, msg.linear.y, 3*msg.angular.z]
             )
         wheel_ang_velocities = self.wheel.calculate_wheel_velocities(velocities)
         wheel_ang_velocities = wheel_ang_velocities / (self.max_angular_velocities/self.max_output_angular_velocities)
