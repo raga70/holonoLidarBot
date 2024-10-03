@@ -122,7 +122,9 @@ class KinOdomProcessing(Node):
         delta_x = (vx * np.cos(self.theta) - vy * np.sin(self.theta)) * delta_time
         delta_y = (vx * np.sin(self.theta) + vy * np.cos(self.theta)) * delta_time
         self.x += delta_x
+        print(delta_x)
         self.y += delta_y
+        print(delta_y)
         self.theta += vtheta*delta_time
 
 
