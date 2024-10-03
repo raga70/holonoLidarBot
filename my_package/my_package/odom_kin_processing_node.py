@@ -125,8 +125,8 @@ class KinOdomProcessing(Node):
         if np.pi / 2 <= self.theta < np.pi:  # Second quadrant (90 to 180 degrees)
             delta_x = -delta_x  # Cos is negative in second quadrant
         elif np.pi <= self.theta < np.pi / 2:  # Third quadrant (180 to 270 degrees)
-            delta_y = -delta_x  # Cos is negative
-            delta_x = -delta_y  # Sin is negative in the third quadrant
+            delta_x = -delta_x  # Cos is negative
+            delta_y = -delta_y  # Sin is negative in the third quadrant
         elif np.pi / 2 <= self.theta < 0:  # Fourth quadrant (270 to 360 degrees or -90 to 0 degrees)
             delta_y = -delta_y  # Sin is negative
         
