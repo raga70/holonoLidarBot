@@ -122,6 +122,7 @@ class KinOdomProcessing(Node):
         delta_y = (vx * math.cos(self.theta) - vy * math.sin(self.theta)) * delta_time
         delta_x = (vx * math.sin(self.theta) + vy * math.cos(self.theta)) * delta_time
         # Optional quadrant-based sign adjustments
+        print(self.theta)
         if np.pi / 2 <= self.theta < np.pi:  # Second quadrant (90 to 180 degrees)
             delta_x = -delta_x  # Cos is negative in second quadrant
         elif np.pi <= self.theta < 3*np.pi / 2:  # Third quadrant (180 to 270 degrees)
