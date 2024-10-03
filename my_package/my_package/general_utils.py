@@ -3,6 +3,18 @@ from geometry_msgs.msg import Quaternion
 import numpy as np
 from nav_msgs.msg import Odometry
 from math_utils import euler_to_quaternion
+
+def scale_to_max_velocity(velocities, wheel_radius, max_rads, length_x, length_y):
+
+    max_x_velocity = (4 * max_rads * wheel_radius) / 4
+    max_y_velocity = (4 * max_rads * wheel_radius) / 4
+    max_angular_velocity = (4*max_rads * wheel_radius)/(4*(length_x + length_y))
+    velocities[0] *= max_x_velocity 
+    velocities[1] *= max_y_velocity
+    velocities[2] = max_angular_velocity
+    return velocities
+    
+    
 def convert_serial_data_to_angular_velocities(serial_read_back: bytes, logger):
     split_data = str(serial_read_back)[2:-1].split(',')
     try:
