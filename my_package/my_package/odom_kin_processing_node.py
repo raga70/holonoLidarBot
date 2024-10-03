@@ -120,7 +120,7 @@ class KinOdomProcessing(Node):
         vy = robot_velocities[1]
         vtheta = robot_velocities[2]
         delta_x = (vx * math.cos(self.theta) - vy * math.sin(self.theta)) * delta_time
-        delta_y = (vx * math.sin(self.theta) - vy * math.cos(self.theta)) * delta_time
+        delta_y = (vx * math.sin(self.theta) + vy * math.cos(self.theta)) * delta_time
         self.x += delta_x
         self.y += delta_y
         self.theta += vtheta*delta_time
