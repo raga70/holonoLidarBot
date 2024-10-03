@@ -1,4 +1,5 @@
 import pygame
+import time
 import math
 import threading
 import rclpy
@@ -46,6 +47,7 @@ class XboxController(object):
             self.LeftJoystickY = self.joystick.get_axis(1)   # normalize between -1 and 1
             self.LeftJoystickX = self.joystick.get_axis(0)   # normalize between -1 and
             self.RightJoystickX = self.joystick.get_axis(3)   # normalize between -1 and 1
+            time.sleep(0.1)
 class MinimalPublisher(Node):
 
     def __init__(self):
