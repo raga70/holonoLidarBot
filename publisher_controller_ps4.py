@@ -1,4 +1,5 @@
 import pygame
+import time
 import math
 import threading
 import rclpy
@@ -46,6 +47,7 @@ class XboxController(object):
             self.LeftJoystickY = self.joystick.get_axis(1)   # normalize between -1 and 1
             self.LeftJoystickX = self.joystick.get_axis(0)   # normalize between -1 and
             self.RightJoystickX = self.joystick.get_axis(3)   # normalize between -1 and 1
+            time.sleep(0.1)
 class MinimalPublisher(Node):
 
     def __init__(self):
@@ -64,8 +66,8 @@ class MinimalPublisher(Node):
         # Get joystick inputs
         joystick_values = self.joystick.read()
         
-        self.X = joystick_values[0]  # Left joystick X controls linear.y
-        self.Y = joystick_values[1]  # Left joystick Y controls linear.x
+        self.X = joystick_values[1]  # Left joystick X controls linear.y
+        self.Y = joystick_values[0]  # Left joystick Y controls linear.x
         self.A = joystick_values[2]  # Right joystick X controls angular.z
 
         # Publish Twist message
