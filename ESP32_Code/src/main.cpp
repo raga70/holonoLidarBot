@@ -1,5 +1,5 @@
 #include <Arduino.h>
-// #include <bluetoothSerial.h>
+#include <bluetoothSerial.h>
 #include "config.h"
 
 void processSerialInput(HardwareSerial &thisserial);
@@ -17,56 +17,55 @@ long p_previousTime = 0;
 
 long lastReceivedTime = 0;
 
-// BluetoothSerial SerialBt;
+BluetoothSerial SerialBt;
 
 void setup()
 {
   // Used to display information
   Serial.begin(9600);
-  // SerialBt.begin("ESP32");
-  
-  Serial2.begin(115200);
-
-  // if ( gpio_install_isr_service(0) != ESP_OK) {
-  //   Serial.println("Failed to install ISR service");
-  // }
-
-  // ESP32Encoder::useInternalWeakPullResistors = puType::up;
-  // enc0.attachHalfQuad(ENCODER0_PIN_A, ENCODER0_PIN_B);
-  // enc0.clearCount();
-  // enc1.attachHalfQuad(ENCODER1_PIN_A, ENCODER1_PIN_B);
-  // enc1.clearCount();
-  // enc2.attachHalfQuad(ENCODER2_PIN_A, ENCODER2_PIN_B);
-  // enc2.clearCount();
-  // enc3.attachHalfQuad(ENCODER3_PIN_A, ENCODER3_PIN_B);
-  // enc3.clearCount();
-
-  lastReceivedTime = millis();
-  // Wait for Serial Monitor to be opened
-  while (!Serial)
+  SerialBt.begin("ESP32");
+    while (!SerialBt.isReady())
   {
     // do nothing
   }
+
+  if ( gpio_install_isr_service(0) != ESP_OK) {
+    SerialBt.println("Failed to install ISR service");
+  }
+
+  ESP32Encoder::useInternalWeakPullResistors = puType::up;
+  enc0.attachHalfQuad(ENCODER0_PIN_A, ENCODER0_PIN_B);
+  enc0.clearCount();
+  enc1.attachHalfQuad(ENCODER1_PIN_A, ENCODER1_PIN_B);
+  enc1.clearCount();
+  enc2.attachHalfQuad(ENCODER2_PIN_A, ENCODER2_PIN_B);
+  enc2.clearCount();
+  enc3.attachHalfQuad(ENCODER3_PIN_A, ENCODER3_PIN_B);
+  enc3.clearCount();
+
+  lastReceivedTime = millis();
+  // Wait for Serial Monitor to be opened
+
   for (size_t i = 0; i < 4; i++)
   {
     motors[i].begin();
-    Serial.println("Motor ");
-    Serial.print(i);
-    Serial.println(" started");
+    SerialBt.println("Motor ");
+    SerialBt.print(i);
+    SerialBt.println(" started");
   }
 
-  Serial.println("Setup Complete");
+  SerialBt.println("Setup Complete");
 }
 
 void loop()
 { 
   currentTime = millis();
 
-  if(currentTime - d_previousTime >= 1000){
-      printSpeeds();
-      printEncoders();
-      d_previousTime = currentTime;
-  }
+  // if(currentTime - d_previousTime >= 1000){
+  //     printSpeeds();
+  //     printEncoders();
+  //     d_previousTime = currentTime;
+  // }
 
   if(currentTime - lastReceivedTime >= 200){
     // Serial.println("No command received");
@@ -83,7 +82,7 @@ void loop()
   }
 
   processSerialInput(Serial);
-  processSerialInput(Serial2);
+  // processSerialInput(Serial2);
 }
 
 void processSerialInput(HardwareSerial &thisserial) {
@@ -100,13 +99,13 @@ void processSerialInput(HardwareSerial &thisserial) {
 
         unsigned long motor = atoi(motorStr);
         if (motor < 0 || motor >= sizeof(motors) / sizeof(Motor)) {
-          Serial.println("Invalid motor number");
+          SerialBt.println("Invalid motor number");
           return;
         }
 
         int speed = atoi(speedStr);
         if(speed < -30 || speed > 30) {
-          Serial.println("Invalid speed");
+          SerialBt.println("Invalid speed");
           return;
         }
 
@@ -120,41 +119,41 @@ void processSerialInput(HardwareSerial &thisserial) {
           motors[motor].stop();
         }
         
-        // Serial.print("Motor: ");
-        // Serial.print(motor);
-        // Serial.print(", Speed: ");
-        // Serial.println(targetSpeed);
+        SerialBt.print("Motor: ");
+        SerialBt.print(motor);
+        SerialBt.print(", Speed: ");
+        SerialBt.println(targetSpeed);
       } else {
-        Serial.println("Invalid input format");
+        SerialBt.println("Invalid input format");
       }
     } else {
-      Serial.print("Unknown command: ");
-      Serial.print(input);
-      Serial.println();
+      SerialBt.print("Unknown command: ");
+      SerialBt.print(input);
+      SerialBt.println();
     }
   }
 }
 
 void printSpeeds(){
-    Serial.println();
+    SerialBt.println();
   for (size_t i = 0; i < 4; i++)
   {
-    Serial.print("Motor ");
-    Serial.print(i);
-    Serial.print(" speed: ");
-    Serial.println(motors[i].getSpeed());
+    SerialBt.print("Motor ");
+    SerialBt.print(i);
+    SerialBt.print(" speed: ");
+    SerialBt.println(motors[i].getSpeed());
   }
 }
 
 void printEncoders(){
-    Serial.println();
+    SerialBt.println();
   for (size_t i = 0; i < 4; i++)
   {
     double count = motors[i].readEncoder();
-    Serial.print("Motor ");
-    Serial.print(i);
-    Serial.print(" encoder: ");
-    Serial.println(count);
+    SerialBt.print("Motor ");
+    SerialBt.print(i);
+    SerialBt.print(" encoder: ");
+    SerialBt.println(count);
 
   }
 }
@@ -167,7 +166,7 @@ void sendEncoder(){
 
   char message[32];
   snprintf(message, sizeof(message), "%li,%li,%li,%li", count, count1, count2, count3);
-  Serial2.println(message);
+  Serial.println(message);
 }
 
 // /// @brief protocol 1 byte per pair of wheels first bit is which pair, second direction, last 6 is speed

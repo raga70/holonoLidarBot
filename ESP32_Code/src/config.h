@@ -1,10 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 #include "motor.h"
-// #define ENCODER_DO_NOT_USE_INTERRUPTS
-// #define ENCODER_OPTIMIZE_INTERRUPTS
-#include <Encoder.h>
-// #include <ESP32Encoder.h>
+#include <ESP32Encoder.h>
 // int pulsesPerRevolution = 1440;
 
 #if defined(__AVR_ATmega2560__)
@@ -81,15 +78,15 @@
 #define ENCODER3_PIN_B 34
 #endif
 
-Encoder enc0(ENCODER0_PIN_A, ENCODER0_PIN_B);
-Encoder enc1(ENCODER1_PIN_A, ENCODER1_PIN_B);
-Encoder enc2(ENCODER2_PIN_A, ENCODER2_PIN_B);
-Encoder enc3(ENCODER3_PIN_A, ENCODER3_PIN_B);
+// Encoder enc0(ENCODER0_PIN_A, ENCODER0_PIN_B);
+// Encoder enc1(ENCODER1_PIN_A, ENCODER1_PIN_B);
+// Encoder enc2(ENCODER2_PIN_A, ENCODER2_PIN_B);
+// Encoder enc3(ENCODER3_PIN_A, ENCODER3_PIN_B);
 
-// ESP32Encoder enc0(true);
-// ESP32Encoder enc1(true);
-// ESP32Encoder enc2(true);
-// ESP32Encoder enc3(true);
+ESP32Encoder enc0(true);
+ESP32Encoder enc1(true);
+ESP32Encoder enc2(true);
+ESP32Encoder enc3(true);
 
 Motor m0(MOTOR0_PIN_EN, MOTOR0_PIN_IN1, MOTOR0_PIN_IN2, enc0);
 Motor m1(MOTOR1_PIN_EN, MOTOR1_PIN_IN1, MOTOR1_PIN_IN2, enc1);

@@ -1,6 +1,6 @@
 #include "motor.h"
 
-Motor::Motor(int enA, int in1, int in2,Encoder &encoder)
+Motor::Motor(int enA, int in1, int in2, ESP32Encoder &encoder)
     : _enA(enA), _in1(in1), _in2(in2),_encoder(encoder), _encoderCount(0) {}
 
 void Motor::begin()
@@ -60,14 +60,12 @@ double Motor::calculateAngularVelocity(unsigned long currentTime)
 
 long Motor::readEncoder()
 {
-    return _encoder.read();
-    // return _encoder.getCount();
+    return _encoder.getCount();
 }
 
 void Motor::resetEncoder()
 {
-    _encoder.write(0);
-    // _encoder.clearCount();
+    _encoder.clearCount();
 }
 
 double Motor::getSpeed()

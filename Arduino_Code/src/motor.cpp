@@ -1,7 +1,7 @@
 #include "motor.h"
 
-Motor::Motor(int enA, int in1, int in2,Encoder &encoder)
-    : _enA(enA), _in1(in1), _in2(in2),_encoder(encoder), _encoderCount(0) {}
+Motor::Motor(int enA, int in1, int in2,Encoder &encoder, bool inverted)
+    : _enA(enA), _in1(in1), _in2(in2),_encoder(encoder),_inverted(inverted), _encoderCount(0) {}
 
 void Motor::begin()
 {
@@ -60,14 +60,12 @@ double Motor::calculateAngularVelocity(unsigned long currentTime)
 
 long Motor::readEncoder()
 {
-    return _encoder.read();
-    // return _encoder.getCount();
+    return _inverted ? _encoder.read() * -1 : _encoder.read();
 }
 
 void Motor::resetEncoder()
 {
     _encoder.write(0);
-    // _encoder.clearCount();
 }
 
 double Motor::getSpeed()

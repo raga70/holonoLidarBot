@@ -3,11 +3,10 @@
 
 #include <Arduino.h>
 #include <Encoder.h>
-// #include <ESP32Encoder.h>
 
 class Motor {
 public:
-    Motor(int enA, int in1, int in2,Encoder &encoder);
+    Motor(int enA, int in1, int in2,Encoder &encoder, bool inverted = false);
     void begin();
     void tick();
     void setSpeed(int speed);
@@ -45,7 +44,7 @@ private:
     const double wheelDiameter = 0.080;  // Wheel diameter in meters (80mm)
     const int pulsesPerRevolution = 1440; // Number of encoder ticks per revolution
     Encoder& _encoder;
-    // ESP32Encoder& _encoder;
+    bool _inverted;
     void PID();
     double calculateAngularVelocity(unsigned long currentTime);
     static void encoderISR();

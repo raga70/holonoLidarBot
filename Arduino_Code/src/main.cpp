@@ -1,5 +1,4 @@
 #include <Arduino.h>
-// #include <bluetoothSerial.h>
 #include "config.h"
 
 void processSerialInput(HardwareSerial &thisserial);
@@ -17,29 +16,12 @@ long p_previousTime = 0;
 
 long lastReceivedTime = 0;
 
-// BluetoothSerial SerialBt;
-
 void setup()
 {
   // Used to display information
   Serial.begin(9600);
-  // SerialBt.begin("ESP32");
-  
+
   Serial2.begin(115200);
-
-  // if ( gpio_install_isr_service(0) != ESP_OK) {
-  //   Serial.println("Failed to install ISR service");
-  // }
-
-  // ESP32Encoder::useInternalWeakPullResistors = puType::up;
-  // enc0.attachHalfQuad(ENCODER0_PIN_A, ENCODER0_PIN_B);
-  // enc0.clearCount();
-  // enc1.attachHalfQuad(ENCODER1_PIN_A, ENCODER1_PIN_B);
-  // enc1.clearCount();
-  // enc2.attachHalfQuad(ENCODER2_PIN_A, ENCODER2_PIN_B);
-  // enc2.clearCount();
-  // enc3.attachHalfQuad(ENCODER3_PIN_A, ENCODER3_PIN_B);
-  // enc3.clearCount();
 
   lastReceivedTime = millis();
   // Wait for Serial Monitor to be opened
@@ -68,13 +50,13 @@ void loop()
       d_previousTime = currentTime;
   }
 
-  if(currentTime - lastReceivedTime >= 300){
-    // Serial.println("No command received");
-    lastReceivedTime = currentTime;
-    for(int i = 0; i < 4; i++){
-      motors[i].stop();
-    }
-  }
+  // if(currentTime - lastReceivedTime >= 300){
+  //   // Serial.println("No command received");
+  //   lastReceivedTime = currentTime;
+  //   for(int i = 0; i < 4; i++){
+  //     motors[i].stop();
+  //   }
+  // }
 
   if(currentTime - p_previousTime >= 100){
     
@@ -120,10 +102,10 @@ void processSerialInput(HardwareSerial &thisserial) {
           motors[motor].stop();
         }
         lastReceivedTime = currentTime;
-        // Serial.print("Motor: ");
-        // Serial.print(motor);
-        // Serial.print(", Speed: ");
-        // Serial.println(targetSpeed);
+        Serial.print("Motor: ");
+        Serial.print(motor);
+        Serial.print(", Speed: ");
+        Serial.println(targetSpeed);
       } else {
         Serial.println("Invalid input format");
       }
