@@ -5,7 +5,7 @@ source /home/ubuntu/ros2_ws/install/setup.bash
 source /opt/ros/humble/setup.bash
 
 # Start the first process in a detached screen session
-screen -dmS wheel_kinematics_odom bash -c "source /opt/ros/humble/setup.bash &&  python3 /home/ubuntu/holonoLidarBot/src/odom_kin_processing_node.py"
+screen -dmS wheel_kinematics_odom bash -c "source /opt/ros/humble/setup.bash &&  python3 /src/odom_kin_processing_node.py"
 
 # Start the second process in another detached screen session
 screen -dmS rplidar_launch bash -c "source /home/ubuntu/ros2_ws/install/setup.bash && source /home/ubuntu/ros2_ws/install/setup.bash && source /opt/ros/humble/setup.bash && ros2 launch /home/ubuntu/ros2_ws/src/install/rplidar_ros/share/rplidar_ros/launch/rplidar_a2m8_launch.py"
