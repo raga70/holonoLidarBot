@@ -2,13 +2,13 @@
 source /opt/ros/humble/setup.bash
 
 # Run the first ROS package
-ros2 launch slam_toolbox slam_launch.py &
+ros2 launch slam_toolbox src/slam_launch.py &
 
 # Run the second ROS package
 rviz2 &
 
 # Run the Python program
-python3 publisher_controller_deadzone.py &
+python3 src/publisher_controller_deadzone.py &
 
 # Wait for all background processes to finish
 wait
