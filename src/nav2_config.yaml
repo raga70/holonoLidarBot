@@ -6,7 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /LaserScan1
+        - /LaserScanos1
         - /LaserScan1/Topic1
         - /TF1
         - /Map1

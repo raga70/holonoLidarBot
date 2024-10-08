@@ -49,7 +49,7 @@ class KinOdomProcessing(Node):
         t = TransformStamped()
         t.header.stamp = current_time.to_msg()
         t.header.frame_id = 'odom'
-        t.child_frame_id = 'base_link'
+        t.child_frame_id = 'base_footprint'
 
         t.transform.translation.x = self.y
         t.transform.translation.y = self.x
