@@ -1,0 +1,11 @@
+slam_toolbox:
+  use_sim_time: false
+  map_update_interval: 2.0
+  publish_map_occupancy: true
+  publish_map_pose: true
+  max_laser_range: 10.0
+  minimum_travel_distance: 0.1
+  base_frame: base_link
+  odom_frame: odom
+  scan_topic: /scan
+  map_topic: /map
