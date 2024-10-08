@@ -86,34 +86,12 @@ class KinOdomProcessing(Node):
 
                 self.update_position_with_odometry(delta_time, robot_velocities)
                 odom = fill_odometry_message(self.x, self.y, self.theta, current_time, robot_velocities)
-                #var_gearbox_backlash = var_gearbox_backlash(ang_velocities, np.radians(0.5), self.wheel)
-
-                ##variances = self.var_encoding + var_gearbox_backlash
-                # odom.pose.covariance = [variances[0], 0, 0, 0, 0, 0,
-                #                         0, variances[1], 0, 0, 0, 0,
-                #                     0, 0, 99999, 0, 0, 0,
-                #                     0, 0, 0, 99999, 0, 0,
-                #                     0, 0, 0, 0, 99999, 0,
-                #                     0, 0, 0, 0, 0, variances[2]]  
-
-                # odom.twist.covariance = [variances[0], 0, 0, 0, 0, 0,
-                #                      0, variances[1], 0, 0, 0, 0,
-                #                      0, 0, 99999, 0, 0, 0,
-                #                      0, 0, 0, 99999, 0, 0,
-                #                      0, 0, 0, 0, 99999, 0,
-                #                      0, 0, 0, 0, 0, variances[2]]  
 
                 self.odom_publisher.publish(odom)
                 self.tf_publish(current_time)
                 self.last_time = current_time
 
     def update_position_with_odometry(self, delta_time, robot_velocities):
-        # delta_x = robot_velocities[0] * delta_time
-        # delta_y = robot_velocities[1] * delta_time
-        # delta_theta = robot_velocities[2] * delta_time
-        # self.theta += delta_theta
-        # self.x += delta_y * math.cos(self.theta) - delta_x * math.sin(self.theta)
-        # self.y += delta_y * math.sin(self.theta) + delta_x * math.cos(self.theta)
         vx = robot_velocities[0]
         vy = robot_velocities[1]
         vtheta = robot_velocities[2]
@@ -123,12 +101,7 @@ class KinOdomProcessing(Node):
         print(f'theta: {np.rad2deg(self.theta)}')
         if np.pi / 2 <= self.theta < np.pi:  # Second quadrant (90 to 180 degrees)
             pass
-            #delta_x = -delta_x
-  #          tmp = delta_x
- #           delta_x = -delta_y  # Cos is negative in second quadrant
-#            delta_y = tmp 
         elif np.pi <= self.theta < 3*np.pi / 2:  # Third quadrant (180 to 270 degrees)
-            print("DEBUG")
             delta_x = delta_x  # Cos is negative
             delta_y = delta_y  # Sin is negative in the third quadrant
         elif np.pi / 2 <= self.theta < 0:  # Fourth quadrant (270 to 360 degrees or -90 to 0 degrees)
@@ -136,13 +109,9 @@ class KinOdomProcessing(Node):
         
         # Continue for other quadrants if necessary
         self.x += delta_x
-        print(delta_x)
         self.y += delta_y
-        print(delta_y)
         self.theta += vtheta*delta_time
         self.theta = np.mod(self.theta, 2 * np.pi)
-
-
 
     def kinematics_callback(self, msg):
         start = time.time()
