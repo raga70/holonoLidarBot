@@ -8,7 +8,7 @@ ros2 launch slam_toolbox slam_launch.py &
 rviz2 &
 
 # Run the Python program
-python3 publisher_wasd.py &
+python3 src/publisher_wasd.py &
 
 # Wait for all background processes to finish
 wait
