@@ -1,7 +1,7 @@
 #include "motor.h"
 
-Motor::Motor(int enA, int in1, int in2,Encoder &encoder, bool inverted)
-    : _enA(enA), _in1(in1), _in2(in2),_encoder(encoder),_inverted(inverted), _encoderCount(0) {}
+Motor::Motor(int enA, int in1, int in2, Encoder &encoder, bool inverted)
+    : _enA(enA), _in1(in1), _in2(in2), _encoder(encoder), _inverted(inverted), _encoderCount(0) {}
 
 void Motor::begin()
 {
@@ -10,10 +10,12 @@ void Motor::begin()
     pinMode(_in2, OUTPUT);
 }
 
+/// @brief sets the speed of the motor from 0 to 255
+/// @param speed
 void Motor::setSpeed(int speed)
 {
     // _targetSpeed = speed;
-    analogWrite(_enA,speed);
+    analogWrite(_enA, abs(speed));
 }
 
 void Motor::forward()

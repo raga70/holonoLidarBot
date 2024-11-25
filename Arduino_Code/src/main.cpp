@@ -44,11 +44,11 @@ void loop()
 { 
   currentTime = millis();
 
-  if(currentTime - d_previousTime >= 1000){
-      printSpeeds();
-      printEncoders();
-      d_previousTime = currentTime;
-  }
+  // if(currentTime - d_previousTime >= 1000){
+  //     printSpeeds();
+  //     printEncoders();
+  //     d_previousTime = currentTime;
+  // }
 
   // if(currentTime - lastReceivedTime >= 300){
   //   // Serial.println("No command received");
@@ -64,7 +64,7 @@ void loop()
     sendEncoder();
   }
 
-  processSerialInput(Serial);
+  // processSerialInput(Serial);
   processSerialInput(Serial2);
 }
 
@@ -73,26 +73,26 @@ void processSerialInput(HardwareSerial &thisserial) {
     char input[32];
     thisserial.readBytesUntil('\n', input, 31);
     input[31] = '\0'; // Ensure null-terminated string
-
     char* command = strtok(input, " "); //tokenise input on spaces
     if (command != nullptr && strcmp(command, "m") == 0) {
       char* motorStr = strtok(NULL, " ");
       char* speedStr = strtok(NULL, " ");
       if (motorStr != nullptr && speedStr != nullptr) {
 
-        unsigned long motor = atoi(motorStr);
+        unsigned int motor = atoi(motorStr);
         if (motor < 0 || motor >= sizeof(motors) / sizeof(Motor)) {
           Serial.println("Invalid motor number");
           return;
         }
 
-        int speed = atoi(speedStr);
-        if(speed < -30 || speed > 30) {
+        double speed = atof(speedStr);
+        if(speed < -10 || speed > 10) {
           Serial.println("Invalid speed");
           return;
         }
 
-        int targetSpeed = map(abs(speed), 0, 11, 0, 255);
+        int targetSpeed = map(abs(speed), 0, 10, 50, 255);
+
           motors[motor].setSpeed(targetSpeed);
         if(speed > 0){
           motors[motor].forward();
@@ -106,6 +106,7 @@ void processSerialInput(HardwareSerial &thisserial) {
         Serial.print(motor);
         Serial.print(", Speed: ");
         Serial.println(targetSpeed);
+        
       } else {
         Serial.println("Invalid input format");
       }
